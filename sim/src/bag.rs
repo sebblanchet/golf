@@ -1,6 +1,7 @@
+use bevy::prelude::*;
 use std::collections::HashMap;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Resource)]
 pub struct Club {
     pub loft: f32,   // loft of the club
     pub speed: f32,  // Speed of the club when swung
@@ -14,7 +15,7 @@ impl Club {
         let weight = 0.2;
         let inertia = 0.1;
 
-        Club {
+        Self {
             loft,
             speed,
             weight,
@@ -23,7 +24,18 @@ impl Club {
     }
 }
 
-#[derive(Debug)]
+impl Default for Club {
+    fn default() -> Self {
+        Self {
+            loft: 1.,
+            speed: 1.,
+            weight: 1.,
+            inertia: 1.,
+        }
+    }
+}
+
+#[derive(Debug, Resource)]
 pub struct Bag {
     pub clubs: HashMap<String, Club>,
 }

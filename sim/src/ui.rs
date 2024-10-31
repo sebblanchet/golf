@@ -2,9 +2,12 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use bevy_egui::{egui, EguiContext};
 
+use crate::bag;
 use crate::state;
 
 pub fn inputs(
+    mut bag: ResMut<bag::Bag>,
+    mut club: ResMut<bag::Club>,
     mut state: ResMut<state::Inputs>,
     mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>,
 ) {
@@ -16,13 +19,13 @@ pub fn inputs(
         .resizable(false)
         .show(ctx.get_mut(), |ui| {
             egui::ComboBox::from_label("club")
-                .selected_text("test".to_string())
+                .selected_text(state.club.clone())
                 .show_ui(ui, |ui| {
-                    let keys = state.bag.list();
+                    let keys = bag.list();
                     for k in keys {
-                        let c = state.bag.get(k.clone());
-                        ui.selectable_value(&mut state.club, c, k);
+                        ui.selectable_value(&mut state.club, k.clone(), k);
                     }
+                    // TODO update club
                 });
             ui.end_row();
 

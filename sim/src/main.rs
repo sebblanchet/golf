@@ -18,6 +18,8 @@ fn main() {
     // shared objs
     app.init_resource::<state::Inputs>()
         .init_resource::<state::Ouputs>()
+        .init_resource::<bag::Club>()
+        .init_resource::<bag::Bag>()
         .insert_resource(Time::<Fixed>::from_hz(100.));
 
     // plugins

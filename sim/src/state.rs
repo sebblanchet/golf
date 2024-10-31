@@ -15,8 +15,7 @@ pub struct Inputs {
     pub position: Vec3,
     pub velocity: Vec3,
     pub angular: Vec3,
-    pub bag: bag::Bag,
-    pub club: bag::Club,
+    pub club: String,
 }
 
 impl Default for Inputs {
@@ -29,11 +28,7 @@ impl Default for Inputs {
         let position = Vec3::ZERO;
         let velocity = Vec3::new(10., 10., 0.);
         let angular = Vec3::new(100., 0., 0.);
-        let bag = bag::Bag::default();
-        let club = bag.get("1w".to_string());
-
-        dbg!(&club);
-        dbg!(&bag.list());
+        let club = "1w".to_string();
 
         Self {
             m,
@@ -44,7 +39,6 @@ impl Default for Inputs {
             position,
             velocity,
             angular,
-            bag,
             club,
         }
     }
