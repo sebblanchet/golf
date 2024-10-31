@@ -19,7 +19,6 @@ pub fn update(
     };
 
     let mut p = Plot::new("position x".to_string());
-
     let x: Vec<f32> = ball.clone().position.into_iter().map(|p| p.x).collect();
     let y: Vec<f32> = ball.clone().position.into_iter().map(|p| p.y).collect();
     p.update(ctx.get_mut(), x, y);
@@ -49,6 +48,8 @@ impl Plot {
                     .allow_zoom(true)
                     .allow_drag(true)
                     .allow_scroll(true)
+                    .include_y(10.)
+                    .include_x(20.)
                     .legend(Legend::default())
                     .show(ui, |plot_ui| {
                         // clean
@@ -59,8 +60,11 @@ impl Plot {
                             p.push([a, b]);
                         }
 
-                        let p = PlotPoints::new(p);
-                        plot_ui.line(Line::new(p).name(self.name.clone()));
+                        let pp = PlotPoints::new(p.clone());
+                        plot_ui.line(Line::new(pp).name(self.name.clone()));
+
+                        let pp = PlotPoints::new(p);
+                        plot_ui.line(Line::new(pp).name("p2"));
                     });
             });
     }

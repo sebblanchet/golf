@@ -72,7 +72,7 @@ pub fn trigger_restart(
     _state: Res<State<AppState>>,
     mut next_state: ResMut<NextState<AppState>>,
 ) {
-    if input.just_pressed(KeyCode::KeyR) {
+    if input.just_pressed(KeyCode::Space) {
         dbg!("user triggered restart");
         next_state.set(AppState::Restarting);
     }
