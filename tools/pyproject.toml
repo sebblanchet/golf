@@ -1,0 +1,35 @@
+[project]
+name = "ball"
+version = "0.1.0"
+description = "Add your description here"
+authors = [{ name = "seb blanchet", email = "s3blanch@uwaterloo.ca" }]
+dependencies = [
+    "numpy>=2.1.2",
+    "scipy>=1.14.1",
+    "matplotlib>=3.9.2",
+    "polars>=1.11.0",
+    "pydantic>=2.9.2",
+    "plotly>=5.24.1",
+    "ipython>=8.28.0",
+    "jupyterlab>=4.2.5",
+]
+readme = "README.md"
+requires-python = ">= 3.8"
+
+[project.scripts]
+"ball" = "ball:app"
+"model" = "ball:model"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ball"]
