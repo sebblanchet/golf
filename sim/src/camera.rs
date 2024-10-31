@@ -1,4 +1,4 @@
-use bevy::input::mouse::{MouseMotion, MouseScrollUnit, MouseWheel};
+use bevy::input::mouse::{MouseMotion, MouseWheel};
 use bevy::prelude::*;
 use std::f32::consts::{FRAC_PI_2, PI, TAU};
 
@@ -95,7 +95,7 @@ pub fn setup(mut commands: Commands) {
 pub fn pan(
     kbd: Res<ButtonInput<KeyCode>>,
     mut evr_motion: EventReader<MouseMotion>,
-    mut evr_scroll: EventReader<MouseWheel>,
+    mut _evr_scroll: EventReader<MouseWheel>,
     mut q_camera: Query<(&PanOrbitSettings, &mut PanOrbitState, &mut Transform)>,
 ) {
     // First, accumulate the total amount of
@@ -106,8 +106,8 @@ pub fn pan(
     // but events are in window/ui coordinates, which are Y-Down)
     total_motion.y = -total_motion.y;
 
-    let mut total_scroll_lines = Vec2::ZERO;
-    let mut total_scroll_pixels = Vec2::ZERO;
+    let total_scroll_lines = Vec2::ZERO;
+    let total_scroll_pixels = Vec2::ZERO;
 
     // TODO how to re enable zoom
     //for ev in evr_scroll.read() {

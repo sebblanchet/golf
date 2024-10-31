@@ -1,5 +1,65 @@
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
+use std::option::Option;
+
+use crate::bag;
+use crate::ball;
+
+#[derive(Debug, Resource)]
+pub struct Inputs {
+    pub m: f32,
+    pub r: f32,
+    pub c_d: f32,
+    pub c_m: f32,
+    pub rho: f32,
+    pub position: Vec3,
+    pub velocity: Vec3,
+    pub angular: Vec3,
+    pub bag: bag::Bag,
+    pub club: bag::Club,
+}
+
+impl Default for Inputs {
+    fn default() -> Self {
+        let m = 0.04593; // mass of the ball in kg (e.g., a standard baseball)
+        let r = 0.04267 / 2.; // radius of the ball in meters
+        let c_d = 0.47; // drag coefficient
+        let c_m = 0.2; // Magnus coefficient (this is a rough estimate)
+        let rho = 1.225; // air density in kg/m^3
+        let position = Vec3::ZERO;
+        let velocity = Vec3::new(10., 10., 0.);
+        let angular = Vec3::new(100., 0., 0.);
+        let bag = bag::Bag::default();
+        let club = bag.get("1w".to_string());
+
+        dbg!(&club);
+        dbg!(&bag.list());
+
+        Self {
+            m,
+            r,
+            c_d,
+            c_m,
+            rho,
+            position,
+            velocity,
+            angular,
+            bag,
+            club,
+        }
+    }
+}
+
+#[derive(Resource)]
+pub struct Ouputs {
+    pub ball: Option<ball::Ball>,
+}
+
+impl Default for Ouputs {
+    fn default() -> Self {
+        Self { ball: None }
+    }
+}
 
 // boilerplate for setting up a basic restarting architecture:
 /// the two states (re)starting and running
@@ -24,74 +84,15 @@ pub fn trigger_restart(
     }
 }
 
-#[derive(Resource)]
-pub struct Results {
-    pub time: String,
-    pub position: String,
-    pub velocity: String,
-    pub angular: String,
-    pub points: Vec<(f32, f32, f32)>,
-}
-
-impl Default for Results {
-    fn default() -> Self {
-        Self {
-            time: "".to_string(),
-            position: "".to_string(),
-            velocity: "".to_string(),
-            angular: "".to_string(),
-            points: vec![(0., 0., 0.)],
-        }
-    }
-}
-
-#[derive(Debug, Resource)]
-pub struct Inputs {
-    pub m: f32,
-    pub r: f32,
-    pub c_d: f32,
-    pub c_m: f32,
-    pub rho: f32,
-    pub loft: f32,
-    pub position: Vec3,
-    pub velocity: Vec3,
-    pub angular: Vec3,
-}
-
-impl Default for Inputs {
-    fn default() -> Self {
-        let m = 0.04593; // mass of the ball in kg (e.g., a standard baseball)
-        let r = 0.04267 / 2.; // radius of the ball in meters
-        let c_d = 0.47; // drag coefficient
-        let c_m = 0.2; // Magnus coefficient (this is a rough estimate)
-        let rho = 1.225; // air density in kg/m^3
-        let loft = 10.; // loft angle
-        let position = Vec3::ZERO;
-        let velocity = Vec3::new(10., 10., 0.);
-        let angular = Vec3::new(100., 0., 0.);
-
-        Self {
-            m,
-            r,
-            c_d,
-            c_m,
-            rho,
-            loft,
-            position,
-            velocity,
-            angular,
-        }
-    }
-}
-
 pub fn teardown(
     mut commands: Commands,
-    mut shared_ui_state: ResMut<Results>,
+    mut outputs: ResMut<Ouputs>,
     query: Query<Entity, (Without<PrimaryWindow>, Without<crate::camera::Camera>)>,
 ) {
     for entity in query.iter() {
         commands.entity(entity).despawn();
     }
 
-    shared_ui_state.points = vec![(0., 0., 0.)];
+    // wipe ball
+    outputs.ball = None;
 }

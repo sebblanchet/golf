@@ -1,45 +1,46 @@
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
-use bevy_egui::egui::{self, DragValue, Event, Vec2};
+use bevy_egui::egui;
 use bevy_egui::EguiContext;
 use egui_plot::{Legend, Line, PlotPoints};
 
 use crate::state;
 
 pub fn update(
-    mut state: ResMut<state::Results>,
+    outputs: ResMut<state::Ouputs>,
     mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>,
 ) {
     let Ok(mut ctx) = egui_ctx.get_single_mut() else {
         return;
     };
 
-    let mut p = PlotExample::new();
-    p.update(ctx.get_mut());
+    let Some(ball) = &outputs.ball else {
+        return;
+    };
+
+    let mut p = Plot::new("position x".to_string());
+
+    let x: Vec<f32> = ball.clone().position.into_iter().map(|p| p.x).collect();
+    let y: Vec<f32> = ball.clone().position.into_iter().map(|p| p.y).collect();
+    p.update(ctx.get_mut(), x, y);
 }
 
-pub struct PlotExample {
-    pub lock_x: bool,
-    pub lock_y: bool,
-    pub ctrl_to_zoom: bool,
-    pub shift_to_horizontal: bool,
-    pub zoom_speed: f32,
-    pub scroll_speed: f32,
+pub struct Plot {
+    name: String,
 }
 
-impl PlotExample {
-    pub fn new() -> Self {
-        Self {
-            lock_x: false,
-            lock_y: false,
-            ctrl_to_zoom: false,
-            shift_to_horizontal: false,
-            zoom_speed: 1.0,
-            scroll_speed: 1.0,
-        }
+impl Plot {
+    pub fn new(name: String) -> Self {
+        Self { name }
     }
 
-    pub fn update(&mut self, ctx: &egui::Context) {
+    pub fn update(&mut self, ctx: &egui::Context, x: Vec<f32>, y: Vec<f32>) {
+        let n = x.len();
+        let m = y.len();
+        if m != n {
+            dbg!("mismatch size");
+            return;
+        }
         egui::TopBottomPanel::bottom("plot")
             .resizable(true)
             .min_height(100.)
@@ -50,8 +51,16 @@ impl PlotExample {
                     .allow_scroll(true)
                     .legend(Legend::default())
                     .show(ui, |plot_ui| {
-                        let sine_points = PlotPoints::from_explicit_callback(|x| x.sin(), .., 5000);
-                        plot_ui.line(Line::new(sine_points).name("Sine"));
+                        // clean
+                        let mut p: Vec<[f64; 2]> = vec![];
+                        for i in 0..n {
+                            let a = x[i] as f64;
+                            let b = y[i] as f64;
+                            p.push([a, b]);
+                        }
+
+                        let p = PlotPoints::new(p);
+                        plot_ui.line(Line::new(p).name(self.name.clone()));
                     });
             });
     }

@@ -6,9 +6,9 @@ use std::fs;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::csv::save;
-use crate::state::{self, Results};
+use crate::state::{self, Ouputs};
 
-#[derive(Component)]
+#[derive(Clone, Component)]
 pub struct Ball {
     pub time: Vec<f32>,
     pub position: Vec<Vec3>,
@@ -122,7 +122,7 @@ impl Ball {
 pub fn simulation(
     time: Res<Time>,
     mut ball_query: Query<(&mut Transform, &mut Ball)>,
-    mut shared_ui_state: ResMut<Results>,
+    mut outputs: ResMut<Ouputs>,
     mut gizmos: Gizmos,
 ) {
     for (mut transform, mut ball) in ball_query.iter_mut() {
@@ -185,15 +185,7 @@ pub fn simulation(
         ball.velocity.push(new_velocity);
         ball.angular.push(angular);
 
-        shared_ui_state.time = t.to_string();
-        shared_ui_state.position = new_position.to_string();
-        shared_ui_state.velocity = new_velocity.to_string();
-        shared_ui_state.angular = angular.to_string();
-
-        // TODO clean
-        shared_ui_state
-            .points
-            .push((new_position.x, new_position.y, t));
+        outputs.ball = Some(ball.clone());
 
         // update state
         transform.translation = new_position;

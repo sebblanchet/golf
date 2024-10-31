@@ -1,3 +1,4 @@
+mod bag;
 mod ball;
 mod camera;
 mod csv;
@@ -16,7 +17,7 @@ fn main() {
 
     // shared objs
     app.init_resource::<state::Inputs>()
-        .init_resource::<state::Results>()
+        .init_resource::<state::Ouputs>()
         .insert_resource(Time::<Fixed>::from_hz(100.));
 
     // plugins
@@ -34,7 +35,7 @@ fn main() {
         .add_systems(PreUpdate, state::trigger_restart)
         .add_systems(
             Update,
-            (ui::inputs, ui::results, camera::pan, plotting::update),
+            (ui::inputs, ui::outputs, camera::pan, plotting::update),
         )
         .add_systems(FixedUpdate, ball::simulation);
 
