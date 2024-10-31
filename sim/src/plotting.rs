@@ -4,7 +4,12 @@ use bevy_egui::egui::{self, DragValue, Event, Vec2};
 use bevy_egui::EguiContext;
 use egui_plot::{Legend, Line, PlotPoints};
 
-pub fn update(mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>) {
+use crate::state;
+
+pub fn update(
+    mut state: ResMut<state::Results>,
+    mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>,
+) {
     let Ok(mut ctx) = egui_ctx.get_single_mut() else {
         return;
     };

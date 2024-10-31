@@ -25,7 +25,7 @@ pub fn trigger_restart(
 }
 
 #[derive(Resource)]
-pub struct SharedUiState {
+pub struct Results {
     pub time: String,
     pub position: String,
     pub velocity: String,
@@ -33,7 +33,7 @@ pub struct SharedUiState {
     pub points: Vec<(f32, f32, f32)>,
 }
 
-impl Default for SharedUiState {
+impl Default for Results {
     fn default() -> Self {
         Self {
             time: "".to_string(),
@@ -46,24 +46,26 @@ impl Default for SharedUiState {
 }
 
 #[derive(Debug, Resource)]
-pub struct SharedInputs {
+pub struct Inputs {
     pub m: f32,
     pub r: f32,
     pub c_d: f32,
     pub c_m: f32,
     pub rho: f32,
+    pub loft: f32,
     pub position: Vec3,
     pub velocity: Vec3,
     pub angular: Vec3,
 }
 
-impl Default for SharedInputs {
+impl Default for Inputs {
     fn default() -> Self {
         let m = 0.04593; // mass of the ball in kg (e.g., a standard baseball)
         let r = 0.04267 / 2.; // radius of the ball in meters
         let c_d = 0.47; // drag coefficient
         let c_m = 0.2; // Magnus coefficient (this is a rough estimate)
         let rho = 1.225; // air density in kg/m^3
+        let loft = 10.; // loft angle
         let position = Vec3::ZERO;
         let velocity = Vec3::new(10., 10., 0.);
         let angular = Vec3::new(100., 0., 0.);
@@ -74,6 +76,7 @@ impl Default for SharedInputs {
             c_d,
             c_m,
             rho,
+            loft,
             position,
             velocity,
             angular,
@@ -83,7 +86,7 @@ impl Default for SharedInputs {
 
 pub fn teardown(
     mut commands: Commands,
-    mut shared_ui_state: ResMut<SharedUiState>,
+    mut shared_ui_state: ResMut<Results>,
     query: Query<Entity, (Without<PrimaryWindow>, Without<crate::camera::Camera>)>,
 ) {
     for entity in query.iter() {

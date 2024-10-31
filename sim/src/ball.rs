@@ -6,7 +6,7 @@ use std::fs;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::csv::save;
-use crate::state::{self, SharedUiState};
+use crate::state::{self, Results};
 
 #[derive(Component)]
 pub struct Ball {
@@ -24,7 +24,7 @@ pub struct Ball {
 }
 
 impl Ball {
-    pub fn new(inputs: &state::SharedInputs, t: f32) -> Self {
+    pub fn new(inputs: &state::Inputs, t: f32) -> Self {
         let start = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap_or_default()
@@ -122,7 +122,7 @@ impl Ball {
 pub fn simulation(
     time: Res<Time>,
     mut ball_query: Query<(&mut Transform, &mut Ball)>,
-    mut shared_ui_state: ResMut<SharedUiState>,
+    mut shared_ui_state: ResMut<Results>,
     mut gizmos: Gizmos,
 ) {
     for (mut transform, mut ball) in ball_query.iter_mut() {

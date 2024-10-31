@@ -15,8 +15,8 @@ fn main() {
     let mut app = App::new();
 
     // shared objs
-    app.init_resource::<state::SharedInputs>()
-        .init_resource::<state::SharedUiState>()
+    app.init_resource::<state::Inputs>()
+        .init_resource::<state::Results>()
         .insert_resource(Time::<Fixed>::from_hz(100.));
 
     // plugins

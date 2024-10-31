@@ -2,17 +2,18 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use bevy_egui::{egui, EguiContext};
 
-use crate::state::{SharedInputs, SharedUiState};
+use crate::state::{Inputs, Results};
 
 pub fn inputs(
-    mut state: ResMut<SharedInputs>,
+    mut state: ResMut<Inputs>,
     mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>,
 ) {
     let Ok(mut ctx) = egui_ctx.get_single_mut() else {
         return;
     };
     egui::SidePanel::right("inputs")
-        .default_width(100.0)
+        .min_width(100.0)
+        .resizable(false)
         .show(ctx.get_mut(), |ui| {
             ui.label("mass [kg]");
             ui.add(egui::Slider::new(&mut state.m, 0. ..=1.));
@@ -57,7 +58,7 @@ pub fn inputs(
 }
 
 pub fn results(
-    shared_ui_state: ResMut<SharedUiState>,
+    shared_ui_state: ResMut<Results>,
     mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>,
 ) {
     let Ok(mut ctx) = egui_ctx.get_single_mut() else {
