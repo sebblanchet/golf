@@ -108,18 +108,21 @@ pub fn pan(
 
     let mut total_scroll_lines = Vec2::ZERO;
     let mut total_scroll_pixels = Vec2::ZERO;
-    for ev in evr_scroll.read() {
-        match ev.unit {
-            MouseScrollUnit::Line => {
-                total_scroll_lines.x += ev.x;
-                total_scroll_lines.y -= ev.y;
-            }
-            MouseScrollUnit::Pixel => {
-                total_scroll_pixels.x += ev.x;
-                total_scroll_pixels.y -= ev.y;
-            }
-        }
-    }
+
+    // TODO how to re enable zoom
+    //for ev in evr_scroll.read() {
+    //    dbg!("mouse");
+    //    match ev.unit {
+    //        MouseScrollUnit::Line => {
+    //            total_scroll_lines.x += ev.x;
+    //            total_scroll_lines.y -= ev.y;
+    //        }
+    //        MouseScrollUnit::Pixel => {
+    //            total_scroll_pixels.x += ev.x;
+    //            total_scroll_pixels.y -= ev.y;
+    //        }
+    //    }
+    //}
 
     for (settings, mut state, mut transform) in &mut q_camera {
         // Check how much of each thing we need to apply.

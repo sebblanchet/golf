@@ -34,12 +34,7 @@ fn main() {
         .add_systems(PreUpdate, state::trigger_restart)
         .add_systems(
             Update,
-            (
-                ui::inputs,
-                ui::results,
-                camera::pan,
-                plotting::window::update,
-            ),
+            (ui::inputs, ui::results, camera::pan, plotting::update),
         )
         .add_systems(FixedUpdate, ball::simulation);
 
