@@ -4,9 +4,9 @@ use bevy::prelude::*;
 pub struct Club {
     pub name: String,
     pub loft: f32,    // loft of the club
-    pub speed: f32,   // Speed of the club when swung
+    pub speed: f32,   // speed of the club when swung
     pub spin: f32,    // backspin rad/s
-    pub weight: f32,  // Weight of the club in kg
+    pub weight: f32,  // weight of the club in kg
     pub inertia: f32, // inertia of club
 }
 
@@ -46,7 +46,7 @@ pub struct Bag {
 }
 
 impl Bag {
-    pub fn new() -> Self {
+    pub fn _new() -> Self {
         Bag { clubs: Vec::new() }
     }
 
@@ -65,7 +65,7 @@ impl Bag {
         v
     }
 
-    pub fn _kinsert(&mut self, club: Club) {
+    pub fn _insert(&mut self, club: Club) {
         self.clubs.push(club);
     }
 }

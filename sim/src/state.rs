@@ -45,6 +45,18 @@ impl Default for Inputs {
     }
 }
 
+impl Inputs {
+    pub fn update(&mut self) {
+        // update velocity and spins
+        dbg!("club change");
+        dbg!(&self.club);
+        let rad = self.club.loft.to_radians();
+        self.velocity.x = self.club.speed * rad.cos();
+        self.velocity.y = self.club.speed * rad.sin();
+        self.spin.z = self.club.spin;
+    }
+}
+
 #[derive(Resource)]
 pub struct Ouputs {
     pub ball: Option<ball::Ball>,
