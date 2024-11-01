@@ -27,6 +27,7 @@ pub fn update(
                 let text = (tend - tstart).to_string();
                 ui.label(text);
             });
+
             ui.horizontal(|ui| {
                 ui.label("carry");
                 let text = ball
@@ -38,11 +39,11 @@ pub fn update(
                     .to_string();
                 ui.label(text);
             });
+
             ui.horizontal(|ui| {
                 let mut max = f32::MIN;
                 for pos in &ball.position {
                     if pos.y > max {
-                        dbg!(pos.y);
                         max = pos.y;
                     }
                 }
