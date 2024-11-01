@@ -59,7 +59,6 @@ def sim(args: Args):
         )
 
         s = args.mass * bfp * args.radius / args.inertia
-        print(s)
         return s
 
     # Coefficient of drag from Reynolds number, based on degree four polynomial.
