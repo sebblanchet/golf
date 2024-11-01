@@ -15,60 +15,75 @@ pub fn inputs(
         return;
     };
     egui::SidePanel::right("inputs")
-        .min_width(100.0)
+        .min_width(200.0)
         .resizable(false)
         .show(ctx.get_mut(), |ui| {
-            egui::ComboBox::from_label("club")
-                .selected_text(state.club.clone())
-                .show_ui(ui, |ui| {
-                    let keys = bag.list();
-                    for k in keys {
-                        ui.selectable_value(&mut state.club, k.clone(), k);
-                    }
-                    // TODO update club
+            egui::CollapsingHeader::new("params")
+                .default_open(true)
+                .show(ui, |ui| {
+                    ui.label("club");
+                    egui::ComboBox::from_label("")
+                        .selected_text(state.club.clone())
+                        .show_ui(ui, |ui| {
+                            let keys = bag.list();
+                            for k in keys {
+                                ui.selectable_value(&mut state.club, k.clone(), k);
+                            }
+                            // TODO update club
+                        });
+
+                    ui.label("mass [kg]");
+                    ui.add(egui::Slider::new(&mut state.m, 0. ..=1.));
+                    ui.end_row();
+
+                    ui.label("radius [m]");
+                    ui.add(egui::Slider::new(&mut state.r, 0. ..=1.));
+                    ui.end_row();
                 });
-            ui.end_row();
+            egui::CollapsingHeader::new("position")
+                .default_open(false)
+                .show(ui, |ui| {
+                    let x = 10.0;
+                    ui.label("x [m]");
+                    ui.add(egui::Slider::new(&mut state.position.x, -x..=x));
+                    ui.end_row();
+                    ui.label("y [m]");
+                    ui.add(egui::Slider::new(&mut state.position.y, -x..=x));
+                    ui.end_row();
+                    ui.label("z [m]");
+                    ui.add(egui::Slider::new(&mut state.position.z, -x..=x));
+                    ui.end_row();
+                });
 
-            ui.label("mass [kg]");
-            ui.add(egui::Slider::new(&mut state.m, 0. ..=1.));
-            ui.end_row();
+            egui::CollapsingHeader::new("velocity")
+                .default_open(false)
+                .show(ui, |ui| {
+                    let v = 100.0;
+                    ui.label("x [m]");
+                    ui.add(egui::Slider::new(&mut state.velocity.x, -v..=v));
+                    ui.end_row();
+                    ui.label("y [m]");
+                    ui.add(egui::Slider::new(&mut state.velocity.y, 0. ..=v));
+                    ui.end_row();
+                    ui.label("z [m]");
+                    ui.add(egui::Slider::new(&mut state.velocity.z, -v..=v));
+                    ui.end_row();
+                });
 
-            ui.label("radius [m]");
-            ui.add(egui::Slider::new(&mut state.r, 0. ..=1.));
-            ui.end_row();
-
-            let x = 10.0;
-            ui.label("x [m]");
-            ui.add(egui::Slider::new(&mut state.position.x, -x..=x));
-            ui.end_row();
-            ui.label("y [m]");
-            ui.add(egui::Slider::new(&mut state.position.y, -x..=x));
-            ui.end_row();
-            ui.label("z [m]");
-            ui.add(egui::Slider::new(&mut state.position.z, -x..=x));
-            ui.end_row();
-
-            let v = 100.0;
-            ui.label("vx [m]");
-            ui.add(egui::Slider::new(&mut state.velocity.x, -v..=v));
-            ui.end_row();
-            ui.label("vy [m]");
-            ui.add(egui::Slider::new(&mut state.velocity.y, 0. ..=v));
-            ui.end_row();
-            ui.label("vz [m]");
-            ui.add(egui::Slider::new(&mut state.velocity.z, -v..=v));
-            ui.end_row();
-
-            let w = 1000.0;
-            ui.label("wx [m]");
-            ui.add(egui::Slider::new(&mut state.angular.x, -w..=w));
-            ui.end_row();
-            ui.label("wy [m]");
-            ui.add(egui::Slider::new(&mut state.angular.y, -w..=w));
-            ui.end_row();
-            ui.label("wz [m]");
-            ui.add(egui::Slider::new(&mut state.angular.z, -w..=w));
-            ui.end_row();
+            egui::CollapsingHeader::new("spin")
+                .default_open(false)
+                .show(ui, |ui| {
+                    let w = 1000.0;
+                    ui.label("x [m]");
+                    ui.add(egui::Slider::new(&mut state.angular.x, -w..=w));
+                    ui.end_row();
+                    ui.label("y [m]");
+                    ui.add(egui::Slider::new(&mut state.angular.y, -w..=w));
+                    ui.end_row();
+                    ui.label("z [m]");
+                    ui.add(egui::Slider::new(&mut state.angular.z, -w..=w));
+                    ui.end_row();
+                });
         });
 }
 
