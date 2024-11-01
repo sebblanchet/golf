@@ -28,13 +28,12 @@ pub fn update(
     let y: Vec<f32> = ball.clone().position.into_iter().map(|p| p.z).collect();
     p.update(ctx.get_mut(), "position x/z".to_string(), x, y);
 
-    let x: Vec<f32> = ball.clone().time;
-    let y: Vec<f32> = ball.clone().velocity.into_iter().map(|p| p.x).collect();
-    p.update(ctx.get_mut(), "velocity x".to_string(), x, y);
-
-    let x: Vec<f32> = ball.clone().time;
-    let y: Vec<f32> = ball.clone().velocity.into_iter().map(|p| p.y).collect();
-    p.update(ctx.get_mut(), "velocity y".to_string(), x, y);
+    //let x: Vec<f32> = ball.clone().time;
+    //let y: Vec<f32> = ball.clone().velocity.into_iter().map(|p| p.x).collect();
+    //p.update(ctx.get_mut(), "velocity x".to_string(), x, y);
+    //let x: Vec<f32> = ball.clone().time;
+    //let y: Vec<f32> = ball.clone().velocity.into_iter().map(|p| p.y).collect();
+    //p.update(ctx.get_mut(), "velocity y".to_string(), x, y);
 }
 
 pub struct Plot {}
@@ -53,8 +52,8 @@ impl Plot {
         }
         egui::Window::new(name)
             .resizable(true)
-            .max_height(250.)
-            .max_width(250.)
+            .min_height(250.)
+            .min_width(250.)
             .show(ctx, |ui| {
                 egui_plot::Plot::new("plot")
                     .allow_zoom(true)

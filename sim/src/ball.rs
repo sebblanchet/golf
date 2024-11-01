@@ -183,7 +183,7 @@ pub fn simulation(
         }
 
         // slow the spin
-        spin -= 0.02 * spin;
+        spin -= 0.01 * spin;
 
         // save
         ball.time.push(t);
