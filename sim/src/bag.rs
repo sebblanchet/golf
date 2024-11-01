@@ -5,12 +5,13 @@ use std::collections::HashMap;
 pub struct Club {
     pub loft: f32,   // loft of the club
     pub speed: f32,  // Speed of the club when swung
+    pub spin: f32,   // backspin rad/s
     pub weight: f32, // Weight of the club in kg
     pub inertia: f32,
 }
 
 impl Club {
-    pub fn new(loft: f32, speed: f32) -> Self {
+    pub fn new(loft: f32, speed: f32, spin: f32) -> Self {
         // TODO
         let weight = 0.2;
         let inertia = 0.1;
@@ -18,6 +19,7 @@ impl Club {
         Self {
             loft,
             speed,
+            spin,
             weight,
             inertia,
         }
@@ -27,8 +29,9 @@ impl Club {
 impl Default for Club {
     fn default() -> Self {
         Self {
-            loft: 1.,
-            speed: 1.,
+            loft: 10.,
+            speed: 50.,
+            spin: 200.,
             weight: 1.,
             inertia: 1.,
         }
@@ -53,7 +56,7 @@ impl Bag {
         if let Some(club) = o {
             club.clone()
         } else {
-            Club::new(10., 50.)
+            Club::default()
         }
     }
 
@@ -75,10 +78,10 @@ impl Bag {
 impl Default for Bag {
     fn default() -> Self {
         // default
-        let w1 = Club::new(10., 50.);
-        let i5 = Club::new(25., 45.);
-        let i7 = Club::new(35., 40.);
-        let pw = Club::new(45., 35.);
+        let w1 = Club::new(10., 50., 200.);
+        let i5 = Club::new(25., 45., 300.);
+        let i7 = Club::new(35., 40., 400.);
+        let pw = Club::new(45., 35., 500.);
 
         // add clubs to the bag with unique names
         let mut clubs = HashMap::new();
@@ -100,10 +103,10 @@ mod test {
         let mut bag = Bag::new();
 
         // create some clubs
-        let w1 = Club::new(10., 50.);
-        let i5 = Club::new(25., 45.);
-        let i7 = Club::new(35., 40.);
-        let pw = Club::new(45., 35.);
+        let w1 = Club::new(10., 50., 100.);
+        let i5 = Club::new(25., 45., 100.);
+        let i7 = Club::new(35., 40., 100.);
+        let pw = Club::new(45., 35., 100.);
 
         // add clubs to the bag with unique names
         bag.insert("1w".to_string(), w1);

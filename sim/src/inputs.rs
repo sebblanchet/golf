@@ -5,9 +5,8 @@ use bevy_egui::{egui, EguiContext};
 use crate::bag;
 use crate::state;
 
-pub fn inputs(
+pub fn update(
     mut bag: ResMut<bag::Bag>,
-    mut club: ResMut<bag::Club>,
     mut state: ResMut<state::Inputs>,
     mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>,
 ) {
@@ -75,64 +74,14 @@ pub fn inputs(
                 .show(ui, |ui| {
                     let w = 1000.0;
                     ui.label("x [m]");
-                    ui.add(egui::Slider::new(&mut state.angular.x, -w..=w));
+                    ui.add(egui::Slider::new(&mut state.spin.x, -w..=w));
                     ui.end_row();
                     ui.label("y [m]");
-                    ui.add(egui::Slider::new(&mut state.angular.y, -w..=w));
+                    ui.add(egui::Slider::new(&mut state.spin.y, -w..=w));
                     ui.end_row();
                     ui.label("z [m]");
-                    ui.add(egui::Slider::new(&mut state.angular.z, -w..=w));
+                    ui.add(egui::Slider::new(&mut state.spin.z, -w..=w));
                     ui.end_row();
                 });
-        });
-}
-
-pub fn outputs(
-    outputs: ResMut<state::Ouputs>,
-    mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>,
-) {
-    let Ok(mut ctx) = egui_ctx.get_single_mut() else {
-        return;
-    };
-
-    let Some(ball) = &outputs.ball else {
-        return;
-    };
-
-    egui::Window::new("results")
-        .vscroll(true)
-        .default_height(100.)
-        .show(ctx.get_mut(), |ui| {
-            ui.horizontal(|ui| {
-                ui.label("time");
-                let text = ball.time.last().copied().unwrap_or_default().to_string();
-                ui.label(text);
-            });
-            ui.horizontal(|ui| {
-                ui.label("position");
-                let text = ball
-                    .position
-                    .last()
-                    .copied()
-                    .unwrap_or_default()
-                    .to_string();
-                ui.label(text);
-            });
-            ui.horizontal(|ui| {
-                ui.label("velocity");
-                let text = ball
-                    .velocity
-                    .last()
-                    .copied()
-                    .unwrap_or_default()
-                    .to_string();
-
-                ui.label(text);
-            });
-            ui.horizontal(|ui| {
-                ui.label("angular");
-                let text = ball.angular.last().copied().unwrap_or_default().to_string();
-                ui.label(text);
-            });
         });
 }

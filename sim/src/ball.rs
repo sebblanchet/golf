@@ -13,7 +13,8 @@ pub struct Ball {
     pub time: Vec<f32>,
     pub position: Vec<Vec3>,
     pub velocity: Vec<Vec3>,
-    pub angular: Vec<Vec3>,
+    pub acceleration: Vec<Vec3>,
+    pub spin: Vec<Vec3>,
     pub start: String,
     pub m: f32,
     pub r: f32,
@@ -42,7 +43,8 @@ impl Ball {
             time: vec![t],
             position: vec![inputs.position],
             velocity: vec![inputs.velocity],
-            angular: vec![inputs.angular],
+            spin: vec![inputs.spin],
+            acceleration: vec![Vec3::ZERO],
             start,
             m,
             r,
@@ -110,9 +112,9 @@ impl Ball {
                 self.velocity[i].x.to_string(),
                 self.velocity[i].y.to_string(),
                 self.velocity[i].z.to_string(),
-                self.angular[i].x.to_string(),
-                self.angular[i].y.to_string(),
-                self.angular[i].z.to_string(),
+                self.spin[i].x.to_string(),
+                self.spin[i].y.to_string(),
+                self.spin[i].z.to_string(),
             ];
             save(path.clone(), v);
         }
@@ -133,7 +135,7 @@ pub fn simulation(
         // extract
         let position = ball.position.last().copied().unwrap_or(Vec3::ZERO);
         let velocity = ball.velocity.last().copied().unwrap_or(Vec3::ZERO);
-        let angular = ball.angular.last().copied().unwrap_or(Vec3::ZERO);
+        let mut spin = ball.spin.last().copied().unwrap_or(Vec3::ZERO);
 
         // follow
         gizmos.linestrip(ball.position.clone(), BLUE);
@@ -152,7 +154,9 @@ pub fn simulation(
         let f_d = 0.5 * ball.c_d * ball.rho * ball.a * speed * speed * unit_velocity;
 
         // magnus force
-        let f_m = 0.5 * ball.c_m * ball.rho * ball.a * (angular.cross(velocity));
+        let s = ball.r * spin.length() / speed;
+        let c_m = (-3.25 * s * s) + 1.99 * s;
+        let f_m = 0.5 * c_m * ball.rho * ball.a * (spin.cross(velocity));
 
         // gravitational force
         let g = Vec3::new(0., 9.81, 0.);
@@ -173,21 +177,23 @@ pub fn simulation(
         // verify when to stop
         if new_position.y < 0.0 {
             new_position.y = 0.0;
-
             new_velocity.x = 0.0;
             new_velocity.y = 0.0;
             new_velocity.z = 0.0;
         }
 
+        // slow the spin
+        spin -= 0.02 * spin;
+
         // save
         ball.time.push(t);
         ball.position.push(new_position);
         ball.velocity.push(new_velocity);
-        ball.angular.push(angular);
-
-        outputs.ball = Some(ball.clone());
+        ball.acceleration.push(acceleration);
+        ball.spin.push(spin);
 
         // update state
+        outputs.ball = Some(ball.clone());
         transform.translation = new_position;
     }
 }

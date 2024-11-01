@@ -14,7 +14,7 @@ pub struct Inputs {
     pub rho: f32,
     pub position: Vec3,
     pub velocity: Vec3,
-    pub angular: Vec3,
+    pub spin: Vec3,
     pub club: String,
 }
 
@@ -22,12 +22,12 @@ impl Default for Inputs {
     fn default() -> Self {
         let m = 0.04593; // mass of the ball in kg (e.g., a standard baseball)
         let r = 0.04267 / 2.; // radius of the ball in meters
-        let c_d = 0.47; // drag coefficient
+        let c_d = 0.3; // drag coefficient
         let c_m = 0.2; // Magnus coefficient (this is a rough estimate)
         let rho = 1.225; // air density in kg/m^3
         let position = Vec3::ZERO;
-        let velocity = Vec3::new(10., 10., 0.);
-        let angular = Vec3::new(100., 0., 0.);
+        let velocity = Vec3::new(50., 10., 0.);
+        let spin = Vec3::new(200., 0., 0.);
         let club = "1w".to_string();
 
         Self {
@@ -38,7 +38,7 @@ impl Default for Inputs {
             rho,
             position,
             velocity,
-            angular,
+            spin,
             club,
         }
     }

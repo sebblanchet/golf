@@ -51,12 +51,10 @@ impl Plot {
             dbg!("mismatch size");
             return;
         }
-        let mut open = true;
         egui::Window::new(name)
             .resizable(true)
-            .open(&mut open)
-            .max_height(150.)
-            .max_width(150.)
+            .max_height(250.)
+            .max_width(250.)
             .show(ctx, |ui| {
                 egui_plot::Plot::new("plot")
                     .allow_zoom(true)

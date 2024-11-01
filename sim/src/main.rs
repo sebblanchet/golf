@@ -2,9 +2,10 @@ mod bag;
 mod ball;
 mod camera;
 mod csv;
+mod inputs;
 mod plotting;
 mod state;
-mod ui;
+mod stats;
 mod world;
 
 use bevy::input::common_conditions::input_toggle_active;
@@ -18,7 +19,6 @@ fn main() {
     // shared objs
     app.init_resource::<state::Inputs>()
         .init_resource::<state::Ouputs>()
-        .init_resource::<bag::Club>()
         .init_resource::<bag::Bag>()
         .insert_resource(Time::<Fixed>::from_hz(100.));
 
@@ -37,7 +37,7 @@ fn main() {
         .add_systems(PreUpdate, state::trigger_restart)
         .add_systems(
             Update,
-            (ui::inputs, ui::outputs, camera::pan, plotting::update),
+            (inputs::update, stats::update, camera::pan, plotting::update),
         )
         .add_systems(FixedUpdate, ball::simulation);
 
