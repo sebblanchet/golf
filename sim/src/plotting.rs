@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use bevy_egui::egui;
+use bevy_egui::egui::Pos2;
 use bevy_egui::EguiContext;
 use egui_plot::{Legend, Line, PlotPoints};
-use std::option::Option;
 
 use crate::state;
 
@@ -20,13 +20,14 @@ pub fn update(
     };
 
     let mut p = Plot::new();
-    let x: Vec<f32> = ball.clone().position.into_iter().map(|p| p.x).collect();
-    let y: Vec<f32> = ball.clone().position.into_iter().map(|p| p.y).collect();
-    p.update(ctx.get_mut(), "position x/y".to_string(), x, y);
 
     let x: Vec<f32> = ball.clone().position.into_iter().map(|p| p.x).collect();
     let y: Vec<f32> = ball.clone().position.into_iter().map(|p| p.z).collect();
     p.update(ctx.get_mut(), "position x/z".to_string(), x, y);
+
+    let x: Vec<f32> = ball.clone().position.into_iter().map(|p| p.x).collect();
+    let y: Vec<f32> = ball.clone().position.into_iter().map(|p| p.y).collect();
+    p.update(ctx.get_mut(), "position x/y".to_string(), x, y);
 
     //let x: Vec<f32> = ball.clone().time;
     //let y: Vec<f32> = ball.clone().velocity.into_iter().map(|p| p.x).collect();
@@ -50,10 +51,12 @@ impl Plot {
             dbg!("mismatch size");
             return;
         }
+
         egui::Window::new(name)
             .resizable(true)
-            .min_height(250.)
-            .min_width(250.)
+            .default_pos(Pos2::new(100., 400.))
+            .default_width(400.)
+            .default_height(250.)
             .show(ctx, |ui| {
                 egui_plot::Plot::new("plot")
                     .allow_zoom(true)

@@ -15,7 +15,7 @@ pub struct Inputs {
     pub position: Vec3,
     pub velocity: Vec3,
     pub spin: Vec3,
-    pub club: String,
+    pub club: bag::Club,
 }
 
 impl Default for Inputs {
@@ -25,10 +25,11 @@ impl Default for Inputs {
         let c_d = 0.4; // drag coefficient
         let c_m = 0.2; // Magnus coefficient (this is a rough estimate)
         let rho = 1.225; // air density in kg/m^3
+        let club = bag::Club::default();
+
         let position = Vec3::ZERO;
         let velocity = Vec3::new(70., 20., 0.);
         let spin = Vec3::new(0., 0., 250.);
-        let club = "1w".to_string();
 
         Self {
             m,
@@ -36,10 +37,10 @@ impl Default for Inputs {
             c_d,
             c_m,
             rho,
+            club,
             position,
             velocity,
             spin,
-            club,
         }
     }
 }
