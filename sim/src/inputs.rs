@@ -17,10 +17,9 @@ pub fn update(
         .min_width(200.0)
         .resizable(false)
         .show(ctx.get_mut(), |ui| {
-            egui::CollapsingHeader::new("inputs")
+            egui::CollapsingHeader::new("club")
                 .default_open(true)
                 .show(ui, |ui| {
-                    ui.label("club");
                     egui::ComboBox::from_label("")
                         .selected_text(state.club.name.clone())
                         .show_ui(ui, |ui| {
@@ -32,14 +31,18 @@ pub fn update(
                                 )
                                 .changed()
                                 .then(|| {
-                                    dbg!("club change");
-                                    // update velocity and spins
+                                    state.update();
                                 });
                             }
                         });
 
                     ui.label("speed [m/s]");
-                    ui.add(egui::Slider::new(&mut state.club.speed, 0. ..=100.));
+                    ui.add(egui::Slider::new(&mut state.club.speed, 0. ..=100.))
+                        .changed()
+                        .then(|| {
+                            state.update();
+                        });
+
                     ui.end_row();
 
                     ui.label("loft [deg]");
