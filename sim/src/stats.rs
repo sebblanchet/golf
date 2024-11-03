@@ -5,6 +5,7 @@ use bevy_egui::{egui, EguiContext};
 use crate::state;
 
 pub fn update(
+    inputs: ResMut<state::Inputs>,
     outputs: ResMut<state::Outputs>,
     mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>,
 ) {
@@ -16,9 +17,8 @@ pub fn update(
         return;
     };
 
-    egui::Window::new("results")
-        .vscroll(true)
-        .default_height(100.)
+    egui::Window::new("stats")
+        .default_height(150.)
         .show(ctx.get_mut(), |ui| {
             ui.horizontal(|ui| {
                 ui.label("flight time");
@@ -49,6 +49,18 @@ pub fn update(
                 }
                 ui.label("apex");
                 ui.label(max.to_string());
+            });
+
+            ui.horizontal(|ui| {
+                let spin = ball.spin[0].length();
+                ui.label("spin");
+                ui.label(spin.to_string());
+            });
+
+            ui.horizontal(|ui| {
+                let smash = ball.velocity[0].length() / inputs.club.speed;
+                ui.label("smash factor");
+                ui.label(smash.to_string());
             });
         });
 }

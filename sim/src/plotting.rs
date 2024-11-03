@@ -3,7 +3,7 @@ use bevy::window::PrimaryWindow;
 use bevy_egui::egui;
 use bevy_egui::egui::Pos2;
 use bevy_egui::EguiContext;
-use egui_plot::{Legend, Line, PlotPoints};
+use egui_plot::{Legend, Line, PlotPoints, PlotUi};
 
 use crate::state;
 
@@ -52,18 +52,18 @@ impl Plot {
             return;
         }
 
-        egui::Window::new(name)
+        egui::Window::new("plots")
             .resizable(true)
             .default_pos(Pos2::new(100., 400.))
             .default_width(400.)
             .default_height(250.)
             .show(ctx, |ui| {
-                egui_plot::Plot::new("plot")
+                egui_plot::Plot::new("plots")
                     .allow_zoom(true)
                     .allow_drag(true)
                     .allow_scroll(true)
                     .legend(Legend::default())
-                    .show(ui, |plot_ui| {
+                    .show(ui, |plot_ui: &mut PlotUi| {
                         // clean
                         let mut v: Vec<[f64; 2]> = vec![];
                         for i in 0..n {
@@ -73,7 +73,7 @@ impl Plot {
                         }
 
                         let p = PlotPoints::new(v.clone());
-                        plot_ui.line(Line::new(p));
+                        plot_ui.line(Line::new(p).name(name));
                     });
             });
     }
