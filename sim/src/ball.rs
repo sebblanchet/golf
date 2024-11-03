@@ -15,6 +15,9 @@ pub struct Ball {
     pub velocity: Vec<Vec3>,
     pub acceleration: Vec<Vec3>,
     pub spin: Vec<Vec3>,
+    pub f_g: Vec<Vec3>,
+    pub f_d: Vec<Vec3>,
+    pub f_m: Vec<Vec3>,
     pub start: String,
     pub inputs: state::Inputs,
     pub a: f32,
@@ -30,8 +33,7 @@ impl Ball {
         //    TODO wasm
         let start = "0001".to_string();
 
-        let r = inputs.r;
-        let a = PI * r * r;
+        let a = PI * inputs.r.powi(2);
 
         Self {
             time: vec![t],
@@ -39,6 +41,9 @@ impl Ball {
             velocity: vec![inputs.velocity],
             spin: vec![inputs.spin],
             acceleration: vec![Vec3::ZERO],
+            f_g: vec![Vec3::ZERO],
+            f_d: vec![Vec3::ZERO],
+            f_m: vec![Vec3::ZERO],
             start,
             a,
             inputs: inputs.clone(),
@@ -52,8 +57,6 @@ impl Ball {
         let head = vec![
             "m".to_string(),
             "r".to_string(),
-            "c_d".to_string(),
-            "c_m".to_string(),
             "rho".to_string(),
             "mu".to_string(),
             "a".to_string(),
@@ -61,8 +64,6 @@ impl Ball {
         let v = vec![
             self.inputs.m.to_string(),
             self.inputs.r.to_string(),
-            self.inputs.c_d.to_string(),
-            self.inputs.c_m.to_string(),
             self.inputs.rho.to_string(),
             self.inputs.mu.to_string(),
             self.a.to_string(),
@@ -71,7 +72,7 @@ impl Ball {
         csv::save(path.clone(), v);
     }
 
-    pub fn save_data(&self) {
+    pub fn _save_data(&self) {
         let path = format!("out/{}_data.csv", self.start);
 
         if fs::exists(path.clone()).unwrap_or_default() {
@@ -114,21 +115,24 @@ impl Ball {
     }
 }
 
-pub fn ball_speed(vclub: f32, theta: f32, clubmass: f32, inertia: f32, m: f32, r: f32) -> f32 {
+pub fn vx(vclub: f32, theta: f32, clubmass: f32, m: f32) -> f32 {
     let theta_rad = theta.to_radians();
     let e = 0.86 - 0.0029 * vclub * theta_rad.cos();
-
-    let bfn = (1.0 + e) * vclub * theta_rad.cos() / (1.0 + m / clubmass);
-    let bfp = vclub * theta_rad.sin() / (1.0 + m / clubmass + (m * r.powi(2) / inertia));
-
-    (bfn.powi(2) + bfp.powi(2)).sqrt()
+    (1.0 + e) * vclub * theta_rad.cos() / (1.0 + m / clubmass)
 }
 
-pub fn ball_spin(vclub: f32, theta: f32, clubmass: f32, inertia: f32, m: f32, r: f32) -> f32 {
+pub fn vy(vclub: f32, theta: f32, clubmass: f32, inertia: f32, m: f32, r: f32) -> f32 {
     let theta_rad = theta.to_radians();
-    let bfp = vclub * theta_rad.sin() / (1.0 + m / clubmass + (m * r.powi(2) / inertia));
+    vclub * theta_rad.sin() / (1.0 + m / clubmass + (m * r.powi(2) / inertia))
+}
 
+pub fn spin(vclub: f32, theta: f32, clubmass: f32, inertia: f32, m: f32, r: f32) -> f32 {
+    let bfp = vy(vclub, theta, clubmass, inertia, m, r);
     m * bfp * r / inertia
+}
+
+pub fn reynolds(v: f32, r: f32, mu: f32) -> f32 {
+    2.0 * r * v / mu
 }
 
 pub fn re_to_cd(re: f32) -> f32 {
@@ -140,15 +144,16 @@ pub fn re_to_cd(re: f32) -> f32 {
     }
 
     // Array of coefficients
-    let coeffs = [
-        9.46410458e-20,
-        -3.80736984e-14,
-        5.72048806e-09,
-        -3.81337408e-04,
-        9.92620188e00,
+    let mut coeffs = [
+        9.4641e-20,
+        -3.80737e-14,
+        5.72049e-09,
+        -3.81337e-04,
+        9.926202,
     ];
 
     // Return value of polynomial approximation
+    coeffs.reverse(); // TODO confirm
     coeffs
         .iter()
         .enumerate()
@@ -156,18 +161,16 @@ pub fn re_to_cd(re: f32) -> f32 {
         .sum()
 }
 
-pub fn reynolds(velocity: f32, r: f32, mu: f32) -> f32 {
-    2.0 * r * velocity / mu
-}
-
-pub fn sphere_cd(velocity: f32, r: f32, mu: f32) -> f32 {
-    re_to_cd(reynolds(velocity, r, mu))
+pub fn sphere_cd(v: f32, r: f32, mu: f32) -> f32 {
+    let re = reynolds(v, r, mu);
+    re_to_cd(re)
 }
 
 pub fn simulation(
     time: Res<Time>,
     mut ball_query: Query<(&mut Transform, &mut Ball)>,
     mut outputs: ResMut<state::Outputs>,
+    mut next_state: ResMut<NextState<state::AppState>>,
     mut gizmos: Gizmos,
 ) {
     for (mut transform, mut ball) in ball_query.iter_mut() {
@@ -184,8 +187,6 @@ pub fn simulation(
         gizmos.linestrip(ball.position.clone(), BLUE);
 
         if velocity == Vec3::ZERO {
-            // stop sim
-            ball.save_data();
             return;
         }
 
@@ -194,19 +195,22 @@ pub fn simulation(
         let unit_velocity = velocity / speed;
 
         // drag force
-        let f_d = 0.5 * ball.inputs.c_d * ball.inputs.rho * ball.a * speed * speed * unit_velocity;
+        let c_d = sphere_cd(speed, ball.inputs.r, ball.inputs.mu);
+        info!(c_d);
+        let f_d = -0.5 * c_d * ball.inputs.rho * ball.a * speed.powi(2) * unit_velocity;
 
         // magnus force
         let s = ball.inputs.r * spin.length() / speed;
-        let c_m = (-3.25 * s * s) + 1.99 * s;
+        let c_m = (-3.25 * s.powi(2)) + 1.99 * s;
+        info!(c_m);
         let f_m = 0.5 * c_m * ball.inputs.rho * ball.a * (spin.cross(velocity));
 
         // gravitational force
-        let g = Vec3::new(0., 9.81, 0.);
+        let g = Vec3::new(0., -9.81, 0.);
         let f_g = ball.inputs.m * g;
 
         // total force
-        let total_force = -f_g - f_d + f_m;
+        let total_force = f_g + f_d + f_m;
 
         // calculate acceleration
         let acceleration = total_force / ball.inputs.m;
@@ -223,10 +227,9 @@ pub fn simulation(
             new_velocity.x = 0.0;
             new_velocity.y = 0.0;
             new_velocity.z = 0.0;
+            info!("done sim");
+            next_state.set(state::AppState::Waiting);
         }
-
-        // slow the spin
-        spin -= (ball.inputs.decel / 100.) * spin;
 
         // save
         ball.time.push(t);
@@ -234,8 +237,12 @@ pub fn simulation(
         ball.velocity.push(new_velocity);
         ball.acceleration.push(acceleration);
         ball.spin.push(spin);
+        ball.f_g.push(f_g);
+        ball.f_d.push(f_d);
+        ball.f_m.push(f_m);
 
         // update state
+        spin -= (ball.inputs.decel / 100.) * spin;
         outputs.ball = Some(ball.clone());
         transform.translation = new_position;
     }

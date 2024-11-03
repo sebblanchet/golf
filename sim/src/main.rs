@@ -32,7 +32,7 @@ fn main() {
             .set(WindowPlugin {
                 primary_window: Some(Window {
                     title: "golf".into(),
-                    resolution: WindowResolution::new(900., 675.),
+                    resolution: WindowResolution::new(1024., 768.),
                     ..default()
                 }),
                 ..default()
@@ -57,7 +57,8 @@ fn main() {
 
     // state transitions
     app.add_systems(OnEnter(state::AppState::Restarting), world::setup)
-        .add_systems(OnExit(state::AppState::Running), state::teardown);
+        .add_systems(OnExit(state::AppState::Waiting), state::teardown);
+
     // run
     app.run();
 }

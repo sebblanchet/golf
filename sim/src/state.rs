@@ -10,8 +10,6 @@ use crate::shot;
 pub struct Inputs {
     pub m: f32,
     pub r: f32,
-    pub c_d: f32,
-    pub c_m: f32,
     pub rho: f32,
     pub position: Vec3,
     pub velocity: Vec3,
@@ -27,8 +25,6 @@ impl Default for Inputs {
     fn default() -> Self {
         let m = 0.04593; // mass of the ball in kg (e.g., a standard baseball)
         let r = 0.04267 / 2.; // radius of the ball in meters
-        let c_d = 0.4; // drag coefficient
-        let c_m = 0.2; // Magnus coefficient (this is a rough estimate)
         let rho = 1.225; // air density in kg/m^3
         let decel = 1.;
         let mu = 1.46e-5;
@@ -43,8 +39,6 @@ impl Default for Inputs {
         Self {
             m,
             r,
-            c_d,
-            c_m,
             rho,
             club,
             position,
@@ -61,12 +55,24 @@ impl Default for Inputs {
 impl Inputs {
     pub fn update(&mut self) {
         // update velocity and spins
-        dbg!("club change");
-        dbg!(&self.club);
-        let rad = self.club.loft.to_radians();
-        self.velocity.x = self.club.speed * rad.cos();
-        self.velocity.y = self.club.speed * rad.sin();
-        self.spin.z = self.club.spin;
+        info!("club change");
+        self.velocity.x = ball::vx(self.club.speed, self.club.loft, self.club.weight, self.m);
+        self.velocity.y = ball::vy(
+            self.club.speed,
+            self.club.loft,
+            self.club.weight,
+            self.club.inertia,
+            self.m,
+            self.r,
+        );
+        self.spin.z = ball::spin(
+            self.club.speed,
+            self.club.loft,
+            self.club.weight,
+            self.club.inertia,
+            self.m,
+            self.r,
+        );
     }
 }
 
@@ -91,6 +97,8 @@ pub enum AppState {
     // when we enter this state, we run any user-defined setup code
     // when we exit this state we tear down anything that was spawned
     Running,
+    // wait for restart
+    Waiting,
 }
 
 pub fn trigger_restart(

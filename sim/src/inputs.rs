@@ -91,18 +91,9 @@ pub fn update(
 
                     ui.end_row();
 
-                    ui.label("spin [rad/s]");
-                    ui.add(egui::Slider::new(&mut state.club.spin, 0. ..=1500.))
-                        .changed()
-                        .then(|| {
-                            state.update();
-                        });
-
-                    ui.end_row();
-
-                    ui.label("weight [kg]");
-                    ui.add(egui::Slider::new(&mut state.club.weight, 0. ..=1.));
-                    ui.end_row();
+                    //ui.label("weight [kg]");
+                    //ui.add(egui::Slider::new(&mut state.club.weight, 0. ..=1.));
+                    //ui.end_row();
                 });
 
             egui::CollapsingHeader::new("params")
@@ -117,11 +108,15 @@ pub fn update(
                     ui.end_row();
 
                     ui.label("air density [kg/m^3]");
-                    ui.add(egui::Slider::new(&mut state.rho, 0. ..=2.));
+                    ui.add(egui::Slider::new(&mut state.rho, 0. ..=5.));
                     ui.end_row();
 
-                    ui.label("drag coefficient [-]");
-                    ui.add(egui::Slider::new(&mut state.c_d, 0. ..=2.));
+                    ui.label("air viscosity [kg/m^3]");
+                    ui.add(egui::Slider::new(&mut state.mu, 0. ..=0.1));
+                    ui.end_row();
+
+                    ui.label("decel spin [%]");
+                    ui.add(egui::Slider::new(&mut state.decel, 1. ..=20.));
                     ui.end_row();
                 });
 
