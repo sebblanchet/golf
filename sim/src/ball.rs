@@ -3,7 +3,7 @@ use bevy::prelude::*;
 
 use std::f32::consts::PI;
 use std::fs;
-use std::time::{SystemTime, UNIX_EPOCH};
+//use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::csv::save;
 use crate::state::{self, Ouputs};
@@ -21,22 +21,25 @@ pub struct Ball {
     pub c_d: f32,
     pub c_m: f32,
     pub rho: f32,
+    pub mu: f32,
     pub a: f32,
 }
 
 impl Ball {
     pub fn new(inputs: &state::Inputs, t: f32) -> Self {
-        let start = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_secs()
-            .to_string();
+        //let start = SystemTime::now()
+        //    .duration_since(UNIX_EPOCH)
+        //    .unwrap_or_default()
+        //    .as_secs()
+        //    .to_string();
+        let start = "0001".to_string();
 
         let m = inputs.m;
         let r = inputs.r;
         let c_d = inputs.c_d;
         let c_m = inputs.c_m;
         let rho = inputs.rho;
+        let mu = 0.0002;
         let a = PI * r * r;
 
         Self {
@@ -51,6 +54,7 @@ impl Ball {
             c_d,
             c_m,
             rho,
+            mu,
             a,
         }
     }
@@ -64,6 +68,7 @@ impl Ball {
             "c_d".to_string(),
             "c_m".to_string(),
             "rho".to_string(),
+            "mu".to_string(),
             "a".to_string(),
         ];
         let v = vec![
@@ -72,6 +77,7 @@ impl Ball {
             self.c_d.to_string(),
             self.c_m.to_string(),
             self.rho.to_string(),
+            self.mu.to_string(),
             self.a.to_string(),
         ];
         save(path.clone(), head);
@@ -119,6 +125,56 @@ impl Ball {
             save(path.clone(), v);
         }
     }
+}
+
+pub fn ball_speed(vclub: f32, theta: f32, clubmass: f32, inertia: f32, m: f32, r: f32) -> f32 {
+    let theta_rad = theta.to_radians();
+    let e = 0.86 - 0.0029 * vclub * theta_rad.cos();
+
+    let bfn = (1.0 + e) * vclub * theta_rad.cos() / (1.0 + m / clubmass);
+    let bfp = vclub * theta_rad.sin() / (1.0 + m / clubmass + (m * r.powi(2) / inertia));
+
+    (bfn.powi(2) + bfp.powi(2)).sqrt()
+}
+
+pub fn ball_spin(vclub: f32, theta: f32, clubmass: f32, inertia: f32, m: f32, r: f32) -> f32 {
+    let theta_rad = theta.to_radians();
+    let bfp = vclub * theta_rad.sin() / (1.0 + m / clubmass + (m * r.powi(2) / inertia));
+
+    m * bfp * r / inertia
+}
+
+pub fn re_to_cd(re: f32) -> f32 {
+    // Clamp output value as it is only an approximation
+    if re > 120000.0 {
+        return 0.370;
+    } else if re < 53000.0 {
+        return 0.8;
+    }
+
+    // Array of coefficients
+    let coeffs = [
+        9.46410458e-20,
+        -3.80736984e-14,
+        5.72048806e-09,
+        -3.81337408e-04,
+        9.92620188e00,
+    ];
+
+    // Return value of polynomial approximation
+    coeffs
+        .iter()
+        .enumerate()
+        .map(|(i, &c)| c * re.powi(i as i32))
+        .sum()
+}
+
+pub fn reynolds(velocity: f32, r: f32, mu: f32) -> f32 {
+    2.0 * r * velocity / mu
+}
+
+pub fn sphere_cd(velocity: f32, r: f32, mu: f32) -> f32 {
+    re_to_cd(reynolds(velocity, r, mu))
 }
 
 pub fn simulation(

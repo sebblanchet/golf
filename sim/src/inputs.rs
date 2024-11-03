@@ -3,6 +3,7 @@ use bevy::window::PrimaryWindow;
 use bevy_egui::{egui, EguiContext};
 
 use crate::bag;
+use crate::shot;
 use crate::state;
 
 pub fn update(
@@ -20,7 +21,7 @@ pub fn update(
             egui::CollapsingHeader::new("club")
                 .default_open(true)
                 .show(ui, |ui| {
-                    egui::ComboBox::from_label("")
+                    egui::ComboBox::from_id_salt("club")
                         .selected_text(state.club.name.clone())
                         .show_ui(ui, |ui| {
                             for club in &bag.clubs {
@@ -36,6 +37,42 @@ pub fn update(
                             }
                         });
 
+                    ui.label("hand");
+                    egui::ComboBox::from_id_salt("hand")
+                        .selected_text(state.hand.to_string())
+                        .show_ui(ui, |ui| {
+                            let hands = vec![shot::Hand::Left, shot::Hand::Right];
+                            for hand in hands {
+                                ui.selectable_value(&mut state.hand, hand, hand.to_string())
+                                    .changed()
+                                    .then(|| {
+                                        state.update();
+                                    });
+                            }
+                        });
+
+                    ui.label("shot");
+                    egui::ComboBox::from_id_salt("shot")
+                        .selected_text(state.shot.to_string())
+                        .show_ui(ui, |ui| {
+                            let shots = vec![
+                                shot::Shot::Push,
+                                shot::Shot::Slice,
+                                shot::Shot::Fade,
+                                shot::Shot::Straight,
+                                shot::Shot::Draw,
+                                shot::Shot::Hook,
+                                shot::Shot::Pull,
+                            ];
+                            for shot in shots {
+                                ui.selectable_value(&mut state.shot, shot, shot.to_string())
+                                    .changed()
+                                    .then(|| {
+                                        state.update();
+                                    });
+                            }
+                        });
+
                     ui.label("speed [m/s]");
                     ui.add(egui::Slider::new(&mut state.club.speed, 0. ..=100.))
                         .changed()
@@ -46,11 +83,21 @@ pub fn update(
                     ui.end_row();
 
                     ui.label("loft [deg]");
-                    ui.add(egui::Slider::new(&mut state.club.loft, 5. ..=60.));
+                    ui.add(egui::Slider::new(&mut state.club.loft, 5. ..=60.))
+                        .changed()
+                        .then(|| {
+                            state.update();
+                        });
+
                     ui.end_row();
 
                     ui.label("spin [rad/s]");
-                    ui.add(egui::Slider::new(&mut state.club.spin, 0. ..=1500.));
+                    ui.add(egui::Slider::new(&mut state.club.spin, 0. ..=1500.))
+                        .changed()
+                        .then(|| {
+                            state.update();
+                        });
+
                     ui.end_row();
 
                     ui.label("weight [kg]");
@@ -81,15 +128,15 @@ pub fn update(
             egui::CollapsingHeader::new("position")
                 .default_open(false)
                 .show(ui, |ui| {
-                    let x = 10.0;
+                    let pos = 50.0;
                     ui.label("x [m]");
-                    ui.add(egui::Slider::new(&mut state.position.x, -x..=x));
+                    ui.add(egui::Slider::new(&mut state.position.x, -pos..=pos));
                     ui.end_row();
                     ui.label("y [m]");
-                    ui.add(egui::Slider::new(&mut state.position.y, -x..=x));
+                    ui.add(egui::Slider::new(&mut state.position.y, -0. ..=pos));
                     ui.end_row();
                     ui.label("z [m]");
-                    ui.add(egui::Slider::new(&mut state.position.z, -x..=x));
+                    ui.add(egui::Slider::new(&mut state.position.z, -pos..=pos));
                     ui.end_row();
                 });
 

@@ -4,6 +4,7 @@ use std::option::Option;
 
 use crate::bag;
 use crate::ball;
+use crate::shot;
 
 #[derive(Debug, Resource)]
 pub struct Inputs {
@@ -16,6 +17,8 @@ pub struct Inputs {
     pub velocity: Vec3,
     pub spin: Vec3,
     pub club: bag::Club,
+    pub hand: shot::Hand,
+    pub shot: shot::Shot,
 }
 
 impl Default for Inputs {
@@ -30,6 +33,8 @@ impl Default for Inputs {
         let position = Vec3::ZERO;
         let velocity = Vec3::new(70., 20., 0.);
         let spin = Vec3::new(0., 0., 250.);
+        let hand = shot::Hand::Left;
+        let shot = shot::Shot::Straight;
 
         Self {
             m,
@@ -41,6 +46,8 @@ impl Default for Inputs {
             position,
             velocity,
             spin,
+            hand,
+            shot,
         }
     }
 }
@@ -57,16 +64,16 @@ impl Inputs {
     }
 }
 
-#[derive(Resource)]
+#[derive(Resource, Default)]
 pub struct Ouputs {
     pub ball: Option<ball::Ball>,
 }
 
-impl Default for Ouputs {
-    fn default() -> Self {
-        Self { ball: None }
-    }
-}
+//impl Default for Ouputs {
+//    fn default() -> Self {
+//        Self { ball: None }
+//    }
+//}
 
 // boilerplate for setting up a basic restarting architecture:
 /// the two states (re)starting and running
