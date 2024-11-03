@@ -15,8 +15,6 @@ impl Plugin for Gpu {
 
         let dev = sapp.world().resource::<RenderDevice>();
 
-        //dev.configure_surface(surface, config);
-
         // check if the device support the required feature. if not, exit the example.
         // in a real application, you should setup a fallback for the missing feature
         if !dev
