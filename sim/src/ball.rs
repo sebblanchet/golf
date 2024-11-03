@@ -5,8 +5,8 @@ use std::f32::consts::PI;
 use std::fs;
 //use std::time::{SystemTime, UNIX_EPOCH};
 
-use crate::csv::save;
-use crate::state::{self, Ouputs};
+use crate::csv;
+use crate::state;
 
 #[derive(Clone, Component)]
 pub struct Ball {
@@ -16,12 +16,7 @@ pub struct Ball {
     pub acceleration: Vec<Vec3>,
     pub spin: Vec<Vec3>,
     pub start: String,
-    pub m: f32,
-    pub r: f32,
-    pub c_d: f32,
-    pub c_m: f32,
-    pub rho: f32,
-    pub mu: f32,
+    pub inputs: state::Inputs,
     pub a: f32,
 }
 
@@ -32,14 +27,10 @@ impl Ball {
         //    .unwrap_or_default()
         //    .as_secs()
         //    .to_string();
+        //    TODO wasm
         let start = "0001".to_string();
 
-        let m = inputs.m;
         let r = inputs.r;
-        let c_d = inputs.c_d;
-        let c_m = inputs.c_m;
-        let rho = inputs.rho;
-        let mu = 0.0002;
         let a = PI * r * r;
 
         Self {
@@ -49,17 +40,13 @@ impl Ball {
             spin: vec![inputs.spin],
             acceleration: vec![Vec3::ZERO],
             start,
-            m,
-            r,
-            c_d,
-            c_m,
-            rho,
-            mu,
             a,
+            inputs: inputs.clone(),
         }
     }
 
     pub fn save_params(&self) {
+        // TODO wasm
         let path = format!("out/{}_params.csv", self.start);
 
         let head = vec![
@@ -72,16 +59,16 @@ impl Ball {
             "a".to_string(),
         ];
         let v = vec![
-            self.m.to_string(),
-            self.r.to_string(),
-            self.c_d.to_string(),
-            self.c_m.to_string(),
-            self.rho.to_string(),
-            self.mu.to_string(),
+            self.inputs.m.to_string(),
+            self.inputs.r.to_string(),
+            self.inputs.c_d.to_string(),
+            self.inputs.c_m.to_string(),
+            self.inputs.rho.to_string(),
+            self.inputs.mu.to_string(),
             self.a.to_string(),
         ];
-        save(path.clone(), head);
-        save(path.clone(), v);
+        csv::save(path.clone(), head);
+        csv::save(path.clone(), v);
     }
 
     pub fn save_data(&self) {
@@ -106,7 +93,7 @@ impl Ball {
             "wy".to_string(),
             "wz".to_string(),
         ];
-        save(path.clone(), head);
+        csv::save(path.clone(), head);
 
         let n = self.time.len();
         for i in 0..n {
@@ -122,7 +109,7 @@ impl Ball {
                 self.spin[i].y.to_string(),
                 self.spin[i].z.to_string(),
             ];
-            save(path.clone(), v);
+            csv::save(path.clone(), v);
         }
     }
 }
@@ -180,7 +167,7 @@ pub fn sphere_cd(velocity: f32, r: f32, mu: f32) -> f32 {
 pub fn simulation(
     time: Res<Time>,
     mut ball_query: Query<(&mut Transform, &mut Ball)>,
-    mut outputs: ResMut<Ouputs>,
+    mut outputs: ResMut<state::Outputs>,
     mut gizmos: Gizmos,
 ) {
     for (mut transform, mut ball) in ball_query.iter_mut() {
@@ -207,22 +194,22 @@ pub fn simulation(
         let unit_velocity = velocity / speed;
 
         // drag force
-        let f_d = 0.5 * ball.c_d * ball.rho * ball.a * speed * speed * unit_velocity;
+        let f_d = 0.5 * ball.inputs.c_d * ball.inputs.rho * ball.a * speed * speed * unit_velocity;
 
         // magnus force
-        let s = ball.r * spin.length() / speed;
+        let s = ball.inputs.r * spin.length() / speed;
         let c_m = (-3.25 * s * s) + 1.99 * s;
-        let f_m = 0.5 * c_m * ball.rho * ball.a * (spin.cross(velocity));
+        let f_m = 0.5 * c_m * ball.inputs.rho * ball.a * (spin.cross(velocity));
 
         // gravitational force
         let g = Vec3::new(0., 9.81, 0.);
-        let f_g = ball.m * g;
+        let f_g = ball.inputs.m * g;
 
         // total force
         let total_force = -f_g - f_d + f_m;
 
         // calculate acceleration
-        let acceleration = total_force / ball.m;
+        let acceleration = total_force / ball.inputs.m;
 
         // update velocity using the trapezoidal rule
         let mut new_velocity = velocity + acceleration * dt;
@@ -239,7 +226,7 @@ pub fn simulation(
         }
 
         // slow the spin
-        spin -= 0.01 * spin;
+        spin -= (ball.inputs.decel / 100.) * spin;
 
         // save
         ball.time.push(t);

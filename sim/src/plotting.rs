@@ -8,7 +8,7 @@ use egui_plot::{Legend, Line, PlotPoints};
 use crate::state;
 
 pub fn update(
-    outputs: ResMut<state::Ouputs>,
+    outputs: ResMut<state::Outputs>,
     mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>,
 ) {
     let Ok(mut ctx) = egui_ctx.get_single_mut() else {

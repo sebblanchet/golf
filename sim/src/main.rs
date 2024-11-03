@@ -22,7 +22,7 @@ fn main() {
 
     // shared objs
     app.init_resource::<state::Inputs>()
-        .init_resource::<state::Ouputs>()
+        .init_resource::<state::Outputs>()
         .init_resource::<bag::Bag>()
         .insert_resource(Time::<Fixed>::from_hz(100.));
 
@@ -32,7 +32,7 @@ fn main() {
             .set(WindowPlugin {
                 primary_window: Some(Window {
                     title: "golf".into(),
-                    resolution: WindowResolution::new(800., 600.),
+                    resolution: WindowResolution::new(900., 675.),
                     ..default()
                 }),
                 ..default()

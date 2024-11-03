@@ -1,3 +1,4 @@
+use bevy::prelude::*;
 use csv::Writer;
 use std::fs::OpenOptions;
 
@@ -6,6 +7,7 @@ pub fn save(path: String, vec: Vec<String>) {
     let file = if let Ok(f) = r {
         f
     } else {
+        error!("no CSV");
         return;
     };
 

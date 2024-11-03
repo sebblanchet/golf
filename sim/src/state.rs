@@ -6,7 +6,7 @@ use crate::bag;
 use crate::ball;
 use crate::shot;
 
-#[derive(Debug, Resource)]
+#[derive(Debug, Resource, Clone)]
 pub struct Inputs {
     pub m: f32,
     pub r: f32,
@@ -19,6 +19,8 @@ pub struct Inputs {
     pub club: bag::Club,
     pub hand: shot::Hand,
     pub shot: shot::Shot,
+    pub decel: f32,
+    pub mu: f32,
 }
 
 impl Default for Inputs {
@@ -28,8 +30,10 @@ impl Default for Inputs {
         let c_d = 0.4; // drag coefficient
         let c_m = 0.2; // Magnus coefficient (this is a rough estimate)
         let rho = 1.225; // air density in kg/m^3
-        let club = bag::Club::default();
+        let decel = 1.;
+        let mu = 1.46e-5;
 
+        let club = bag::Club::default();
         let position = Vec3::ZERO;
         let velocity = Vec3::new(70., 20., 0.);
         let spin = Vec3::new(0., 0., 250.);
@@ -48,6 +52,8 @@ impl Default for Inputs {
             spin,
             hand,
             shot,
+            decel,
+            mu,
         }
     }
 }
@@ -65,11 +71,11 @@ impl Inputs {
 }
 
 #[derive(Resource, Default)]
-pub struct Ouputs {
+pub struct Outputs {
     pub ball: Option<ball::Ball>,
 }
 
-//impl Default for Ouputs {
+//impl Default for Outputs {
 //    fn default() -> Self {
 //        Self { ball: None }
 //    }
@@ -100,7 +106,7 @@ pub fn trigger_restart(
 
 pub fn teardown(
     mut commands: Commands,
-    mut outputs: ResMut<Ouputs>,
+    mut outputs: ResMut<Outputs>,
     query: Query<Entity, (Without<PrimaryWindow>, Without<crate::camera::Camera>)>,
 ) {
     for entity in query.iter() {
