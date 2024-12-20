@@ -1,4 +1,5 @@
 use bevy::color::palettes::basic::BLUE;
+use bevy::math::NormedVectorSpace;
 use bevy::prelude::*;
 
 use std::f32::consts::PI;
@@ -48,6 +49,45 @@ impl Ball {
             a,
             inputs: inputs.clone(),
         }
+    }
+
+    pub fn _init() {
+        // TODO
+    }
+
+    pub fn lift(&self, velocity: Vec3, rvelocity: Vec3) -> Vec3 {
+        let s = self.inputs.r * rvelocity.norm() / velocity.norm();
+        let c_m = (-3.25 * s.powi(2)) + 1.99 * s;
+
+        if c_m == 0. {
+            return Vec3::ZERO;
+        }
+
+        // print(c_m)
+        let f_m = 0.5 * self.inputs.rho * self.a * c_m;
+
+        // Cross product of angular velocity and linear velocity, for direction of spin
+        let rxv = rvelocity.cross(velocity);
+        let rl = rxv.norm();
+        let rxv = rxv / rl;
+
+        // Magnitude of spin is considered in coefficient of lift
+        f_m * velocity.norm().powi(2) * rxv
+    }
+
+    pub fn drag(&self, velocity: Vec3) -> Vec3 {
+        let speed = velocity.norm();
+        let c_d = sphere_cd(speed, self.inputs.r, self.inputs.mu);
+        -0.5 * c_d * self.inputs.rho * self.a * velocity.norm() * velocity
+    }
+
+    pub fn gravity(&self) -> Vec3 {
+        let g = Vec3::new(0., -9.81, 0.);
+        self.inputs.m * g
+    }
+
+    pub fn _step() {
+        //TODO
     }
 
     pub fn save_params(&self) {
@@ -190,24 +230,11 @@ pub fn simulation(
             return;
         }
 
-        // norm
-        let speed = velocity.length();
-        let unit_velocity = velocity / speed;
-
-        // drag force
-        let c_d = sphere_cd(speed, ball.inputs.r, ball.inputs.mu);
-        info!(c_d);
-        let f_d = -0.5 * c_d * ball.inputs.rho * ball.a * speed.powi(2) * unit_velocity;
-
-        // magnus force
-        let s = ball.inputs.r * spin.length() / speed;
-        let c_m = (-3.25 * s.powi(2)) + 1.99 * s;
-        info!(c_m);
-        let f_m = 0.5 * c_m * ball.inputs.rho * ball.a * (spin.cross(velocity));
+        let f_d = ball.drag(velocity);
+        let f_m = ball.lift(velocity, spin);
 
         // gravitational force
-        let g = Vec3::new(0., -9.81, 0.);
-        let f_g = ball.inputs.m * g;
+        let f_g = ball.gravity();
 
         // total force
         let total_force = f_g + f_d + f_m;
@@ -243,7 +270,7 @@ pub fn simulation(
 
         // update state
         spin -= (ball.inputs.decel / 100.) * spin;
-        outputs.ball = Some(ball.clone());
+        outputs.ball = Some(ball.clone()); // TODO make efficient
         transform.translation = new_position;
     }
 }
