@@ -10,8 +10,8 @@ pub fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut next_state: ResMut<NextState<state::AppState>>,
-    time: Res<Time>,
     inputs: ResMut<state::Inputs>,
+    time: Res<Time>,
 ) {
     let sphere = meshes.add(Sphere::new(0.1).mesh());
     let ball = ball::Ball::new(inputs.as_ref(), time.elapsed().as_secs_f32());

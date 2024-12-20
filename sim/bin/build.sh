@@ -1,5 +1,4 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
 set -ex
 
 # compile
@@ -11,4 +10,4 @@ rm -rfv bin/wasm/target/*
 wasm-bindgen --out-dir bin/wasm/target --target web target/wasm32-unknown-unknown/release/${CRATE_NAME}.wasm
 
 # serve
-basic-http-server bin/wasm
+#basic-http-server bin/wasm

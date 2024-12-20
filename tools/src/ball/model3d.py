@@ -103,6 +103,7 @@ def sim(args: Args):
         if cl == 0:
             return np.array([0, 0, 0])
 
+        print(cl)
         S = 0.5 * density * area * cl
 
         # Cross product of angular velocity and linear velocity, for direction of spin
