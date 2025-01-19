@@ -1,15 +1,21 @@
 FROM rust:1.84
 
-ENV NAME ball
-
 # init
+ENV NAME ball
+WORKDIR /out
 WORKDIR /app
 COPY . .
 
-# build
-RUN cargo install wasm-bindgen-cli
+# install
+RUN cargo install -f wasm-bindgen-cli --version 0.2.100
 RUN cargo install wasm-opt
+RUN cargo install basic-http-server
 RUN rustup target add wasm32-unknown-unknown
-RUN cargo build --profile=wasm-release --target wasm32-unknown-unknown --no-default-features
-RUN wasm-bindgen --out-dir . --target web target/wasm32-unknown-unknown/release/${NAME}.wasm
-RUN wasm-opt -Oz "${NAME}_bg.wasm" -o "${NAME}_opt.wasm"
+
+# build
+RUN ./bin/build.sh /out
+
+# serve
+WORKDIR /out
+RUN ls -alR /out
+ENTRYPOINT ["basic-http-server", "-a", "0.0.0.0:8004"]
