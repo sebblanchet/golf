@@ -1,21 +1,18 @@
-FROM rust:1.84
+# install deps
+FROM rust:1.84 AS base
+RUN cargo install -f wasm-bindgen-cli --version 0.2.100
+RUN cargo install wasm-opt
+RUN rustup target add wasm32-unknown-unknown
 
-# init
-ENV NAME ball
+# build app
+FROM base AS build
 WORKDIR /out
 WORKDIR /app
 COPY . .
-
-# install
-RUN cargo install -f wasm-bindgen-cli --version 0.2.100
-RUN cargo install wasm-opt
-RUN cargo install basic-http-server
-RUN rustup target add wasm32-unknown-unknown
-
-# build
 RUN ./bin/build.sh /out
 
-# serve
+# package
+FROM alpine as pkg
 WORKDIR /out
+COPY --from=build /out .
 RUN ls -alR /out
-ENTRYPOINT ["basic-http-server", "-a", "0.0.0.0:8004"]

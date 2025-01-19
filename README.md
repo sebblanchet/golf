@@ -11,6 +11,11 @@ Golf ball flight simulation using `rust` and `bevy` to run in the browser using 
 - Change clubhead loft, speed, spin
 - Visualize in 3D world
 
+### Build
+
+```bash
+./bin/docker.sh
+```
 
 ### References
 
