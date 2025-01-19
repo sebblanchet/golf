@@ -11,6 +11,7 @@ name=$(grep name Cargo.toml | awk '{ print $3 }' | tr -d '"')
 cargo build --profile=wasm-release --target wasm32-unknown-unknown --no-default-features
 
 # build wasm
+mkdir -p $dst
 rm -rfv $dst/*
 wasm-bindgen --out-dir $dst --target web target/wasm32-unknown-unknown/wasm-release/${name}.wasm
 du -h "$dst/${name}_bg.wasm"
@@ -25,3 +26,4 @@ du -h "$dst/${name}_zip.wasm"
 
 # copy index
 cp -rfv assets/index.html $out
+ls -alR $out
