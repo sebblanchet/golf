@@ -11,8 +11,8 @@ WORKDIR /app
 COPY . .
 RUN ./bin/build.sh /out
 
-# package
-FROM alpine as pkg
+# package and serve
+FROM busybox as pkg
 WORKDIR /out
 COPY --from=build /out .
-RUN ls -alR /out
+ENTRYPOINT httpd -f -v -p 9002 -h .

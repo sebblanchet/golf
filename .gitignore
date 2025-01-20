@@ -1,6 +1,7 @@
 */target/
 */.venv/
 **/wasm/**
+**/out/**
 !*/out/.gitkeep
 
 *.csv
