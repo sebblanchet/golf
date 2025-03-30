@@ -63,15 +63,14 @@ impl Ball {
             return Vec3::ZERO;
         }
 
-        // print(c_m)
         let f_m = 0.5 * self.inputs.rho * self.a * c_m;
 
-        // Cross product of angular velocity and linear velocity, for direction of spin
+        // cross product of angular velocity and linear velocity, for direction of spin
         let rxv = rvelocity.cross(velocity);
         let rl = rxv.norm();
         let rxv = rxv / rl;
 
-        // Magnitude of spin is considered in coefficient of lift
+        // magnitude of spin is considered in coefficient of lift
         f_m * velocity.norm().powi(2) * rxv
     }
 
@@ -193,7 +192,7 @@ pub fn re_to_cd(re: f32) -> f32 {
     ];
 
     // Return value of polynomial approximation
-    coeffs.reverse(); // TODO confirm
+    coeffs.reverse();
     coeffs
         .iter()
         .enumerate()

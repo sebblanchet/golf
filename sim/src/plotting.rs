@@ -52,13 +52,13 @@ impl Plot {
             return;
         }
 
-        egui::Window::new("plots")
+        egui::Window::new("Plots")
             .resizable(true)
             .default_pos(Pos2::new(100., 400.))
             .default_width(400.)
             .default_height(250.)
             .show(ctx, |ui| {
-                egui_plot::Plot::new("plots")
+                egui_plot::Plot::new(name.clone())
                     .allow_zoom(true)
                     .allow_drag(true)
                     .allow_scroll(true)

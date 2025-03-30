@@ -23,11 +23,11 @@ pub struct Inputs {
 
 impl Default for Inputs {
     fn default() -> Self {
-        let m = 0.04593; // mass of the ball in kg (e.g., a standard baseball)
+        let m = 0.04593; // mass of the ball in kg
         let r = 0.04267 / 2.; // radius of the ball in meters
         let rho = 1.225; // air density in kg/m^3
-        let decel = 1.;
-        let mu = 1.46e-5;
+        let mu = 1.46e-5; // air viscosity at 25 in m^2/s
+        let decel = 0.;
 
         let club = bag::Club::default();
         let position = Vec3::ZERO;
@@ -81,12 +81,6 @@ pub struct Outputs {
     pub ball: Option<ball::Ball>,
 }
 
-//impl Default for Outputs {
-//    fn default() -> Self {
-//        Self { ball: None }
-//    }
-//}
-
 // boilerplate for setting up a basic restarting architecture:
 /// the two states (re)starting and running
 #[derive(States, Default, Debug, Clone, Hash, Eq, PartialEq)]
@@ -107,7 +101,7 @@ pub fn trigger_restart(
     mut next_state: ResMut<NextState<AppState>>,
 ) {
     if input.just_pressed(KeyCode::Space) {
-        dbg!("user triggered restart");
+        info!("user triggered restart");
         next_state.set(AppState::Restarting);
     }
 }

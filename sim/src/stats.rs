@@ -17,11 +17,11 @@ pub fn update(
         return;
     };
 
-    egui::Window::new("stats")
+    egui::Window::new("Stats")
         .default_height(150.)
         .show(ctx.get_mut(), |ui| {
             ui.horizontal(|ui| {
-                ui.label("flight time");
+                ui.label("Flight Time:");
                 let tstart = ball.time.first().copied().unwrap_or_default();
                 let tend = ball.time.last().copied().unwrap_or_default();
                 let text = (tend - tstart).to_string();
@@ -29,7 +29,7 @@ pub fn update(
             });
 
             ui.horizontal(|ui| {
-                ui.label("carry");
+                ui.label("Carry:");
                 let text = ball
                     .position
                     .last()
@@ -47,20 +47,22 @@ pub fn update(
                         max = pos.y;
                     }
                 }
-                ui.label("apex");
+                ui.label("Apex:");
                 ui.label(max.to_string());
             });
 
             ui.horizontal(|ui| {
                 let spin = ball.spin[0].length();
-                ui.label("spin");
+                ui.label("Spin:");
                 ui.label(spin.to_string());
             });
 
             ui.horizontal(|ui| {
                 let smash = ball.velocity[0].length() / inputs.club.speed;
-                ui.label("smash factor");
+                ui.label("Smash Factor:");
                 ui.label(smash.to_string());
             });
+
+            // TODO add shot guess/push pull hook
         });
 }

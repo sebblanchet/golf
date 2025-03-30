@@ -254,8 +254,6 @@ pub fn pan(
             // To position the camera, get the backward direction vector
             // and place the camera at the desired radius from the center.
             transform.translation = state.center + transform.back() * state.radius;
-
-            dbg!(state);
         }
     }
 }

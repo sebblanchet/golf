@@ -41,7 +41,6 @@ animation: spin 1s linear infinite;
 <div class="spinner"></div>
 </div>
 <div id="content" style="display: none;">
-<h1>Wasm Module Loaded!</h1>
 </div>
 <script type="module">
 import init from './target/golf-sim.js'
@@ -54,13 +53,12 @@ document.getElementById('loading').style.display = 'flex';
 console.log("start");
 setTimeout(() => {
 
-init(); // Replace with your actual init function
+init();
 
 // Hide the loading spinner and show the content
 document.getElementById('loading').style.display = 'none';
 document.getElementById('content').style.display = 'block';
-console.log("done");
-
+console.log("init");
 }, 10000);
 }
 

@@ -1,3 +1,4 @@
+mod about;
 mod bag;
 mod ball;
 mod camera;
@@ -40,8 +41,14 @@ fn main() {
             .set(ImagePlugin::default_nearest()),
     )
     .add_plugins(EguiPlugin)
-    .add_plugins(WorldInspectorPlugin::default().run_if(input_toggle_active(true, KeyCode::Escape)))
     .add_plugins(plugins::Gpu);
+
+    // debug
+    if cfg!(debug_assertions) {
+        app.add_plugins(
+            WorldInspectorPlugin::default().run_if(input_toggle_active(true, KeyCode::Escape)),
+        );
+    };
 
     // state
     app.init_state::<state::AppState>();
@@ -52,7 +59,13 @@ fn main() {
         .add_systems(PreUpdate, state::trigger_restart)
         .add_systems(
             Update,
-            (inputs::update, stats::update, camera::pan, plotting::update),
+            (
+                about::update,
+                inputs::update,
+                stats::update,
+                camera::pan,
+                plotting::update,
+            ),
         )
         .add_systems(FixedUpdate, ball::simulation);
 
