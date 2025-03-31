@@ -59,7 +59,6 @@ def sim(args: Args):
         )
 
         s = args.mass * bfp * args.radius / args.inertia
-        print(s)
         return s
 
     # Coefficient of drag from Reynolds number, based on degree four polynomial.
@@ -104,6 +103,7 @@ def sim(args: Args):
         if cl == 0:
             return np.array([0, 0, 0])
 
+        print(cl)
         S = 0.5 * density * area * cl
 
         # Cross product of angular velocity and linear velocity, for direction of spin

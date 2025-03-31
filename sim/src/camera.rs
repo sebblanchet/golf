@@ -85,10 +85,15 @@ pub fn setup(mut commands: Commands) {
     let mut camera = PanOrbitCameraBundle::default();
     // Position our camera using our component,
     // not Transform (it would get overwritten)
-    camera.state.center = Vec3::new(4., 3., 5.);
-    camera.state.radius = 20.;
-    camera.state.pitch = -0.2;
-    camera.state.yaw = -0.8;
+    let c = Vec3::new(1.4843028, 4.2334895, -4.3448415);
+    camera.state = PanOrbitState {
+        center: c,
+        radius: 105.186386,
+        upside_down: false,
+        pitch: -0.30821052,
+        yaw: -1.222371,
+    };
+
     commands.spawn(camera).insert(Camera);
 }
 

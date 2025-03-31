@@ -4,55 +4,81 @@ use std::option::Option;
 
 use crate::bag;
 use crate::ball;
+use crate::shot;
 
-#[derive(Debug, Resource)]
+#[derive(Debug, Resource, Clone)]
 pub struct Inputs {
     pub m: f32,
     pub r: f32,
-    pub c_d: f32,
-    pub c_m: f32,
     pub rho: f32,
     pub position: Vec3,
     pub velocity: Vec3,
-    pub angular: Vec3,
-    pub club: String,
+    pub spin: Vec3,
+    pub club: bag::Club,
+    pub hand: shot::Hand,
+    pub shot: shot::Shot,
+    pub decel: f32,
+    pub mu: f32,
 }
 
 impl Default for Inputs {
     fn default() -> Self {
-        let m = 0.04593; // mass of the ball in kg (e.g., a standard baseball)
+        let m = 0.04593; // mass of the ball in kg
         let r = 0.04267 / 2.; // radius of the ball in meters
-        let c_d = 0.47; // drag coefficient
-        let c_m = 0.2; // Magnus coefficient (this is a rough estimate)
         let rho = 1.225; // air density in kg/m^3
+        let mu = 1.46e-5; // air viscosity at 25 in m^2/s
+        let decel = 0.;
+
+        let club = bag::Club::default();
         let position = Vec3::ZERO;
-        let velocity = Vec3::new(10., 10., 0.);
-        let angular = Vec3::new(100., 0., 0.);
-        let club = "1w".to_string();
+        let velocity = Vec3::new(70., 20., 0.);
+        let spin = Vec3::new(0., 0., 250.);
+        let hand = shot::Hand::Left;
+        let shot = shot::Shot::Straight;
 
         Self {
             m,
             r,
-            c_d,
-            c_m,
             rho,
+            club,
             position,
             velocity,
-            angular,
-            club,
+            spin,
+            hand,
+            shot,
+            decel,
+            mu,
         }
     }
 }
 
-#[derive(Resource)]
-pub struct Ouputs {
-    pub ball: Option<ball::Ball>,
+impl Inputs {
+    pub fn update(&mut self) {
+        // update velocity and spins
+        info!("club change");
+        self.velocity.x = ball::vx(self.club.speed, self.club.loft, self.club.weight, self.m);
+        self.velocity.y = ball::vy(
+            self.club.speed,
+            self.club.loft,
+            self.club.weight,
+            self.club.inertia,
+            self.m,
+            self.r,
+        );
+        self.spin.z = ball::spin(
+            self.club.speed,
+            self.club.loft,
+            self.club.weight,
+            self.club.inertia,
+            self.m,
+            self.r,
+        );
+    }
 }
 
-impl Default for Ouputs {
-    fn default() -> Self {
-        Self { ball: None }
-    }
+#[derive(Resource, Default)]
+pub struct Outputs {
+    pub ball: Option<ball::Ball>,
 }
 
 // boilerplate for setting up a basic restarting architecture:
@@ -65,6 +91,8 @@ pub enum AppState {
     // when we enter this state, we run any user-defined setup code
     // when we exit this state we tear down anything that was spawned
     Running,
+    // wait for restart
+    Waiting,
 }
 
 pub fn trigger_restart(
@@ -73,14 +101,14 @@ pub fn trigger_restart(
     mut next_state: ResMut<NextState<AppState>>,
 ) {
     if input.just_pressed(KeyCode::Space) {
-        dbg!("user triggered restart");
+        info!("user triggered restart");
         next_state.set(AppState::Restarting);
     }
 }
 
 pub fn teardown(
     mut commands: Commands,
-    mut outputs: ResMut<Ouputs>,
+    mut outputs: ResMut<Outputs>,
     query: Query<Entity, (Without<PrimaryWindow>, Without<crate::camera::Camera>)>,
 ) {
     for entity in query.iter() {
