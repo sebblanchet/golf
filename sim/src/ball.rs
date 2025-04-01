@@ -59,6 +59,8 @@ impl Ball {
         let s = self.inputs.r * rvelocity.norm() / velocity.norm();
         let c_m = (-3.25 * s.powi(2)) + 1.99 * s;
 
+        dbg!(c_m);
+
         if c_m == 0. {
             return Vec3::ZERO;
         }
@@ -77,6 +79,7 @@ impl Ball {
     pub fn drag(&self, velocity: Vec3) -> Vec3 {
         let speed = velocity.norm();
         let c_d = sphere_cd(speed, self.inputs.r, self.inputs.mu);
+        dbg!(c_d);
         -0.5 * c_d * self.inputs.rho * self.a * velocity.norm() * velocity
     }
 

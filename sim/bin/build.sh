@@ -13,16 +13,12 @@ cargo build --profile=wasm-release --target wasm32-unknown-unknown --no-default-
 # build wasm
 mkdir -p $dst
 rm -rfv $dst/*
-wasm-bindgen --out-dir $dst --target web target/wasm32-unknown-unknown/wasm-release/${name}.wasm
+wasm-bindgen target/wasm32-unknown-unknown/wasm-release/${name}.wasm --out-dir $dst --no-modules --no-typescript
 du -h "$dst/${name}_bg.wasm"
 
 # optimize
 wasm-opt -Oz "$dst/${name}_bg.wasm" -o "$dst/${name}_opt.wasm"
 du -h "$dst/${name}_opt.wasm"
-
-# compress
-gzip -9 <"$dst/${name}_opt.wasm" >"$dst/${name}_zip.wasm"
-du -h "$dst/${name}_zip.wasm"
 
 # copy index
 cp -rfv assets/index.html $out

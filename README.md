@@ -14,6 +14,7 @@ Golf ball flight simulation using `rust` and `bevy` to run in the browser using 
 ### Build
 
 ```bash
+cd sim
 ./bin/docker.sh
 ```
 
