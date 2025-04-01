@@ -76,17 +76,14 @@ impl Ball {
 
     pub fn drag(&self, velocity: Vec3) -> Vec3 {
         let speed = velocity.norm();
+        let unit = velocity / speed;
         let c_d = sphere_cd(speed, self.inputs.r, self.inputs.mu);
-        -0.5 * c_d * self.inputs.rho * self.a * velocity.norm() * velocity
+        -0.5 * c_d * self.inputs.rho * self.a * speed.powi(2) * unit
     }
 
     pub fn gravity(&self) -> Vec3 {
         let g = Vec3::new(0., -9.81, 0.);
         self.inputs.m * g
-    }
-
-    pub fn _step() {
-        //TODO
     }
 
     pub fn save_params(&self) {
@@ -175,24 +172,21 @@ pub fn reynolds(v: f32, r: f32, mu: f32) -> f32 {
 }
 
 pub fn re_to_cd(re: f32) -> f32 {
-    // Clamp output value as it is only an approximation
+    // clamp output value as it is only an approximation
     if re > 120000.0 {
         return 0.370;
     } else if re < 53000.0 {
         return 0.8;
     }
 
-    // Array of coefficients
     let mut coeffs = [
-        9.4641e-20,
-        -3.80737e-14,
-        5.72049e-09,
-        -3.81337e-04,
         9.926202,
+        -3.81337e-04,
+        5.72049e-09,
+        -3.80737e-14,
+        9.4641e-20,
     ];
 
-    // Return value of polynomial approximation
-    coeffs.reverse();
     coeffs
         .iter()
         .enumerate()
@@ -217,34 +211,30 @@ pub fn simulation(
         let dt = time.delta_seconds();
         let t = time.elapsed().as_secs_f32();
 
-        // extract
+        // extract from bevy state
         let position = ball.position.last().copied().unwrap_or(Vec3::ZERO);
         let velocity = ball.velocity.last().copied().unwrap_or(Vec3::ZERO);
         let mut spin = ball.spin.last().copied().unwrap_or(Vec3::ZERO);
 
-        // follow
+        // ball tracer
         gizmos.linestrip(ball.position.clone(), BLUE);
 
+        // done sim
         if velocity == Vec3::ZERO {
             return;
         }
 
+        // forces
         let f_d = ball.drag(velocity);
         let f_m = ball.lift(velocity, spin);
-
-        // gravitational force
         let f_g = ball.gravity();
 
-        // total force
+        // solve for acceleration
         let total_force = f_g + f_d + f_m;
-
-        // calculate acceleration
         let acceleration = total_force / ball.inputs.m;
 
-        // update velocity using the trapezoidal rule
+        // double integration using trapezoidal rule
         let mut new_velocity = velocity + acceleration * dt;
-
-        // update position using the trapezoidal rule
         let mut new_position = position + (((velocity + new_velocity) / 2.0) * dt);
 
         // verify when to stop

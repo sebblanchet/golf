@@ -20,12 +20,5 @@ pub fn update(mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>) {
                 "https://github.com/sebblanchet/golf",
             );
             ui.label("v0.1.0");
-
-            ui.add_space(10.);
-            ui.heading("Controls");
-            ui.label("Left Shift+Mouse: Zoom");
-            ui.label("Left Ctrl+Mouse:  Pan");
-            ui.label("Left Alt+Mouse:   Orbit");
-            ui.label("Space Rar:        Restart Simulation");
         });
 }

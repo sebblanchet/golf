@@ -16,7 +16,7 @@ function build() {
   docker run -d --name "$name" -p 9002:9002 "$name"
 
   # extract files for container
-  docker cp "$name":/out/ .
+  docker cp "$name":/out/ ../
 }
 
 build

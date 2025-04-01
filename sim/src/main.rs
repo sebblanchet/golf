@@ -32,8 +32,8 @@ fn main() {
         DefaultPlugins
             .set(WindowPlugin {
                 primary_window: Some(Window {
-                    title: "golf".into(),
-                    resolution: WindowResolution::new(1024., 768.),
+                    title: "Golf Sim".into(),
+                    resolution: WindowResolution::new(1900., 1080.),
                     ..default()
                 }),
                 ..default()
@@ -54,7 +54,6 @@ fn main() {
     app.init_state::<state::AppState>();
 
     // systems
-    // TODO add pre Startup
     app.add_systems(Startup, (world::setup, camera::setup))
         .add_systems(PreUpdate, state::trigger_restart)
         .add_systems(

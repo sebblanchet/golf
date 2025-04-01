@@ -1,7 +1,8 @@
 use bevy::prelude::*;
+use bevy::reflect::List;
 use bevy::window::PrimaryWindow;
-use bevy_egui::egui;
 use bevy_egui::egui::Pos2;
+use bevy_egui::egui::{Context, Window};
 use bevy_egui::EguiContext;
 use egui_plot::{Legend, Line, PlotPoints, PlotUi};
 
@@ -19,62 +20,54 @@ pub fn update(
         return;
     };
 
-    let mut p = Plot::new();
+    let mut plots = vec![];
 
     let x: Vec<f32> = ball.clone().position.into_iter().map(|p| p.x).collect();
-    let y: Vec<f32> = ball.clone().position.into_iter().map(|p| p.z).collect();
-    p.update(ctx.get_mut(), "position x/z".to_string(), x, y);
+    let y: Vec<f32> = ball.clone().position.into_iter().map(|p| -p.z).collect();
+    plots.push(Plot {
+        name: "Position x/z".to_string(),
+        x,
+        y,
+    });
 
     let x: Vec<f32> = ball.clone().position.into_iter().map(|p| p.x).collect();
     let y: Vec<f32> = ball.clone().position.into_iter().map(|p| p.y).collect();
-    p.update(ctx.get_mut(), "position x/y".to_string(), x, y);
+    plots.push(Plot {
+        name: "Position x/y".to_string(),
+        x,
+        y,
+    });
 
-    //let x: Vec<f32> = ball.clone().time;
-    //let y: Vec<f32> = ball.clone().velocity.into_iter().map(|p| p.x).collect();
-    //p.update(ctx.get_mut(), "velocity x".to_string(), x, y);
-    //let x: Vec<f32> = ball.clone().time;
-    //let y: Vec<f32> = ball.clone().velocity.into_iter().map(|p| p.y).collect();
-    //p.update(ctx.get_mut(), "velocity y".to_string(), x, y);
-}
-
-pub struct Plot {}
-
-impl Plot {
-    pub fn new() -> Self {
-        Self {}
-    }
-
-    pub fn update(&mut self, ctx: &egui::Context, name: String, x: Vec<f32>, y: Vec<f32>) {
-        let n = x.len();
-        let m = y.len();
-        if m != n {
-            dbg!("mismatch size");
-            return;
-        }
-
-        egui::Window::new("Plots")
+    for (i, plot) in plots.iter().enumerate() {
+        Window::new(plot.name.clone())
             .resizable(true)
-            .default_pos(Pos2::new(100., 400.))
+            .default_pos(Pos2::new(100. + (i as f32 * 250.), 400.))
             .default_width(400.)
             .default_height(250.)
-            .show(ctx, |ui| {
-                egui_plot::Plot::new(name.clone())
+            .show(ctx.get_mut(), |ui| {
+                egui_plot::Plot::new("plot")
                     .allow_zoom(true)
                     .allow_drag(true)
                     .allow_scroll(true)
                     .legend(Legend::default())
                     .show(ui, |plot_ui: &mut PlotUi| {
-                        // clean
+                        let n = plot.x.len();
                         let mut v: Vec<[f64; 2]> = vec![];
                         for i in 0..n {
-                            let a = x[i] as f64;
-                            let b = y[i] as f64;
+                            let a = plot.x[i] as f64;
+                            let b = plot.y[i] as f64;
                             v.push([a, b]);
                         }
 
                         let p = PlotPoints::new(v.clone());
-                        plot_ui.line(Line::new(p).name(name));
+                        plot_ui.line(Line::new(p).name(plot.name.clone()));
                     });
             });
     }
+}
+
+pub struct Plot {
+    name: String,
+    x: Vec<f32>,
+    y: Vec<f32>,
 }
