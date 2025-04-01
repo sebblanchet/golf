@@ -1,6 +1,7 @@
+- loading full/screen
 - vector mult for draw/fade
-- loading screen
 - optimize rust code (remove unwraps/clones)
 - imperial units
 - controls
-- background colors
+- visually look better background colors
+- add zoom on ball showing vectors

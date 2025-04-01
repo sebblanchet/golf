@@ -2,16 +2,29 @@
 
 > seb
 
-Golf ball flight simulation using `rust` and `bevy` to run in the browser using `wasm`.
+Golf ball flight simulation using `Rust` and `bevy` to run in the browser using `WASM`.
 
 
 ### Features
 
 - Runs in browser
-- Change clubhead loft, speed, spin
+- Change club head loft, speed, spin
 - Visualize in 3D world
 
+## Developping
+
+Install required cargo deps and run standalone as native app:
+
+```bash
+cd sim
+./bin/install.sh
+
+cargo run
+```
+
 ### Build
+
+Full docker build with `wasm-bindgen` for web artifacts:
 
 ```bash
 cd sim

@@ -4,6 +4,8 @@ use std::fs::OpenOptions;
 
 pub fn save(path: String, vec: Vec<String>) {
     let r = OpenOptions::new().create(true).append(true).open(path);
+
+    // TODO enable wasm
     let file = if let Ok(f) = r {
         f
     } else {

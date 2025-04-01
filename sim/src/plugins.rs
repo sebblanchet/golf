@@ -23,5 +23,7 @@ impl Plugin for Gpu {
         {
             error!("Render device doesn't support feature");
         }
+
+        // TODO wasm stuff
     }
 }
