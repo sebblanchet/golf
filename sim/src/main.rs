@@ -33,7 +33,7 @@ fn main() {
             .set(WindowPlugin {
                 primary_window: Some(Window {
                     title: "Golf Sim".into(),
-                    resolution: WindowResolution::new(1024., 768.),
+                    resolution: WindowResolution::new(1900., 1080.),
                     ..default()
                 }),
                 ..default()

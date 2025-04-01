@@ -5,8 +5,12 @@
 <!-- Disable zooming: -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
+<!-- 
+from egui example: 
+https://github.com/emilk/egui/blob/master/web_demo/index.html
+-->
 <head>
-    <title>egui – An immediate mode GUI written in Rust</title>
+    <title>Golf Sim</title>
     <style>
         html {
             /* Remove touch delay: */
@@ -129,7 +133,7 @@
             function check_for_panic() {
             console.log(handle)
                 if (handle.has_panicked()) {
-                    console.error("The egui app has crashed");
+                    console.error("Golf Sim Crashed");
 
                     // The demo app already logs the panic message and callstack, but you
                     // can access them like this if you want to show them in the html:
@@ -139,7 +143,7 @@
                     document.getElementById("golf_sim_id").remove();
                     document.getElementById("center_text").innerHTML = `
                         <p>
-                            The egui app has crashed.
+                            Golf Sim has crashed.
                         </p>
                         <p style="font-size:10px" align="left">
                             ${handle.panic_message()}
@@ -173,10 +177,11 @@
         }
 
         function on_error(error) {
+            // silence/ignore non error
             if (!error.message.startsWith("Using exceptions for control flow,")) {
-            console.error("Failed to start: " + error);
-            document.getElementById("golf_sim_id").remove();
-            document.getElementById("center_text").innerHTML = `
+                console.error("Failed to start: " + error);
+                document.getElementById("golf_sim_id").remove();
+                document.getElementById("center_text").innerHTML = `
                 <p>
                     An error occurred during loading:
                 </p>
@@ -193,4 +198,3 @@
 
 </html>
 
-<!-- Powered by egui: https://github.com/emilk/egui/ -->

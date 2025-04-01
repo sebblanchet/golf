@@ -1,7 +1,7 @@
-- loading full/screen
 - vector mult for draw/fade
 - optimize rust code (remove unwraps/clones)
 - imperial units
 - controls
 - visually look better background colors
 - add zoom on ball showing vectors
+- upgrade bevy

@@ -23,7 +23,7 @@ pub fn update(
     let mut plots = vec![];
 
     let x: Vec<f32> = ball.clone().position.into_iter().map(|p| p.x).collect();
-    let y: Vec<f32> = ball.clone().position.into_iter().map(|p| p.z).collect();
+    let y: Vec<f32> = ball.clone().position.into_iter().map(|p| -p.z).collect();
     plots.push(Plot {
         name: "Position x/z".to_string(),
         x,

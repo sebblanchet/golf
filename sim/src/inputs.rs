@@ -10,6 +10,7 @@ pub fn update(
     bag: ResMut<bag::Bag>,
     mut state: ResMut<state::Inputs>,
     mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>,
+    mut next_state: ResMut<NextState<state::AppState>>,
 ) {
     let Ok(mut ctx) = egui_ctx.get_single_mut() else {
         return;
@@ -18,6 +19,22 @@ pub fn update(
         .min_width(200.0)
         .resizable(false)
         .show(ctx.get_mut(), |ui| {
+            egui::CollapsingHeader::new("Controls")
+                .default_open(true)
+                .show(ui, |ui| {
+                    // TODO camera
+                    if ui.button("Restart").clicked() {
+                        info!("user triggered restart");
+                        next_state.set(state::AppState::Restarting);
+                    }
+                    ui.end_row();
+
+                    if ui.button("Reset Inputs").clicked() {
+                        info!("user triggered reset params");
+                        *state = state::Inputs::default();
+                    }
+                    ui.end_row();
+                });
             egui::CollapsingHeader::new("Club")
                 .default_open(true)
                 .show(ui, |ui| {

@@ -108,21 +108,6 @@ pub fn trigger_restart(
     }
 }
 
-pub fn buttons(
-    mut next_state: ResMut<NextState<AppState>>,
-    mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>,
-) {
-    //let Ok(mut ctx) = egui_ctx.get_single_mut() else {
-    //    return;
-    //};
-    //egui::Window::new("Controls")
-    //    .default_height(150.)
-    //    .show(ctx.get_mut(), |ui| {
-    //        info!("user triggered restart");
-    //        next_state.set(AppState::Restarting);
-    //    });
-}
-
 pub fn teardown(
     mut commands: Commands,
     mut outputs: ResMut<Outputs>,
