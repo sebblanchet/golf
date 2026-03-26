@@ -6,6 +6,12 @@ use crate::bag;
 use crate::ball;
 use crate::shot;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Units {
+    Metric,
+    Imperial,
+}
+
 #[derive(Debug, Resource, Clone)]
 pub struct Inputs {
     pub m: f32,
@@ -15,10 +21,11 @@ pub struct Inputs {
     pub velocity: Vec3,
     pub spin: Vec3,
     pub club: bag::Club,
-    pub hand: shot::Hand,
-    pub shot: shot::Shot,
+    pub _hand: shot::Hand,
+    pub _shot: shot::Shot,
     pub decel: f32,
     pub mu: f32,
+    pub units: Units,
 }
 
 impl Default for Inputs {
@@ -33,8 +40,8 @@ impl Default for Inputs {
         let position = Vec3::ZERO;
         let velocity = Vec3::new(70., 20., 0.);
         let spin = Vec3::new(0., 0., 250.);
-        let hand = shot::Hand::Left;
-        let shot = shot::Shot::Straight;
+        let _hand = shot::Hand::Left;
+        let _shot = shot::Shot::Straight;
 
         Self {
             m,
@@ -44,10 +51,11 @@ impl Default for Inputs {
             position,
             velocity,
             spin,
-            hand,
-            shot,
+            _hand,
+            _shot,
             decel,
             mu,
+            units: Units::Metric,
         }
     }
 }
@@ -56,23 +64,10 @@ impl Inputs {
     pub fn update(&mut self) {
         // update velocity and spins
         info!("club change");
-        self.velocity.x = ball::vx(self.club.speed, self.club.loft, self.club.weight, self.m);
-        self.velocity.y = ball::vy(
-            self.club.speed,
-            self.club.loft,
-            self.club.weight,
-            self.club.inertia,
-            self.m,
-            self.r,
-        );
-        self.spin.z = ball::spin(
-            self.club.speed,
-            self.club.loft,
-            self.club.weight,
-            self.club.inertia,
-            self.m,
-            self.r,
-        );
+        let vy = ball::vy(self.club.speed, self.club.loft, self.club.smash);
+        self.velocity.x = ball::vx(self.club.speed, self.club.loft, self.club.smash);
+        self.velocity.y = vy;
+        self.spin.z = self.club.spin;
     }
 }
 
@@ -118,3 +113,5 @@ pub fn teardown(
     // wipe ball
     outputs.ball = None;
 }
+
+// CSV export is now user-triggered from the UI (Stats panel)

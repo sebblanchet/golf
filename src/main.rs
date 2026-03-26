@@ -2,6 +2,7 @@ mod about;
 mod bag;
 mod ball;
 mod camera;
+mod constants;
 mod csv;
 mod inputs;
 mod logging;

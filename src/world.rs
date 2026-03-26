@@ -15,7 +15,6 @@ pub fn setup(
 ) {
     let sphere = meshes.add(Sphere::new(0.1).mesh());
     let ball = ball::Ball::new(inputs.as_ref(), time.elapsed().as_secs_f32());
-    ball.save_params();
 
     commands
         .spawn(PbrBundle {

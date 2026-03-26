@@ -8,10 +8,11 @@ pub struct Club {
     pub spin: f32,    // backspin rad/s
     pub weight: f32,  // weight of the club in kg
     pub inertia: f32, // inertia of club
+    pub smash: f32,   // smash factor
 }
 
 impl Club {
-    pub fn new(n: &str, loft: f32, speed: f32, spin: f32) -> Self {
+    pub fn new(n: &str, loft: f32, speed: f32, spin: f32, smash: f32) -> Self {
         let weight = 0.2;
         let inertia = 9.145e-6;
         let name = n.to_string();
@@ -23,6 +24,7 @@ impl Club {
             spin,
             weight,
             inertia,
+            smash,
         }
     }
 }
@@ -30,12 +32,13 @@ impl Club {
 impl Default for Club {
     fn default() -> Self {
         Self {
-            name: "1w".to_string(),
+            name: "Driver".to_string(),
             loft: 10.,
-            speed: 50.,
-            spin: 200.,
+            speed: 42.,
+            spin: 280.,
             weight: 0.2,
             inertia: 9.145e-6,
+            smash: 1.5,
         }
     }
 }
@@ -73,10 +76,17 @@ impl Bag {
 impl Default for Bag {
     fn default() -> Self {
         let clubs = vec![
-            Club::new("1w", 10., 50., 200.),
-            Club::new("5i", 25., 45., 300.),
-            Club::new("7i", 35., 40., 400.),
-            Club::new("pw", 45., 35., 500.),
+            Club::default(),
+            Club::new("3-wood", 14., 39., 330., 1.5),
+            Club::new("5-wood", 18., 38., 360., 1.5),
+            Club::new("3-iron", 21., 37., 410., 1.5),
+            Club::new("4-iron", 24., 36., 440., 1.5),
+            Club::new("5-iron", 27., 35., 500., 1.5),
+            Club::new("6-iron", 30., 34., 540., 1.5),
+            Club::new("7-iron", 33., 33., 590., 1.5),
+            Club::new("8-iron", 37., 32., 640., 1.5),
+            Club::new("9-iron", 42., 30., 700., 1.5),
+            Club::new("PW", 46., 29., 760., 1.5),
         ];
         Self { clubs }
     }

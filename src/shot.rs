@@ -4,7 +4,7 @@ use std::fmt;
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Hand {
     Left = 1,
-    Right = -1,
+    _Right = -1,
 }
 
 impl fmt::Display for Hand {
@@ -16,26 +16,26 @@ impl fmt::Display for Hand {
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Shot {
-    Push, // L
-    Slice,
-    Fade,
+    _Push, // L
+    _Slice,
+    _Fade,
     Straight,
-    Draw,
-    Hook,
-    Pull, // R
+    _Draw,
+    _Hook,
+    _Pull, // R
 }
 
 impl Shot {
     // TODO
     fn _value(&self) -> Vec3 {
         match *self {
-            Shot::Push => Vec3::new(0., 0., 0.),
-            Shot::Slice => Vec3::new(0., 0., 0.),
-            Shot::Fade => Vec3::new(0., 0., 0.),
+            Shot::_Push => Vec3::new(0., 0., 0.),
+            Shot::_Slice => Vec3::new(0., 0., 0.),
+            Shot::_Fade => Vec3::new(0., 0., 0.),
             Shot::Straight => Vec3::new(0., 0., 0.),
-            Shot::Draw => Vec3::new(0., 0., 0.),
-            Shot::Hook => Vec3::new(0., 0., 0.),
-            Shot::Pull => Vec3::new(0., 0., 0.),
+            Shot::_Draw => Vec3::new(0., 0., 0.),
+            Shot::_Hook => Vec3::new(0., 0., 0.),
+            Shot::_Pull => Vec3::new(0., 0., 0.),
         }
     }
 }
