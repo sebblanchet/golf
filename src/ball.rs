@@ -158,6 +158,16 @@ impl Ball {
         }
     }
 
+    pub fn is_start(&self) -> bool {
+        self.position.last().unwrap().y == 0. && self.velocity.last().unwrap().length() != 0.
+    }
+
+    pub fn log_once(&self, msg: String) -> () {
+        if self.is_start() {
+            info!("{}", msg);
+        }
+    }
+
     pub fn reynolds(&self, v: f32) -> f32 {
         (2.0 * self.inputs.r * v * self.inputs.rho) / self.inputs.mu
     }
@@ -197,19 +207,22 @@ impl Ball {
         // optional constant c_m
         let mut c_m = self.inputs.c_m;
         if c_m == 0. {
-            c_m = self.get_cm(omega.norm(), velocity.norm());
+            self.log_once("using variable c_m".into());
+            c_m = self.get_cm(omega.length(), velocity.length());
             if c_m == 0. {
                 return (0., Vec3::ZERO);
             }
+        } else {
+            self.log_once("using constant c_m".into());
         }
 
         // cross product of angular velocity and linear velocity, for direction of spin
-        let oh = omega / omega.norm();
-        let vh = velocity / velocity.norm();
+        let oh = omega / omega.length();
+        let vh = velocity / velocity.length();
         let rxv = oh.cross(vh);
 
         // magnitude of spin is considered in coefficient of lift
-        let f_m = 0.5 * self.inputs.rho * self.a * c_m * velocity.norm().powi(2) * rxv;
+        let f_m = 0.5 * self.inputs.rho * self.a * c_m * velocity.length().powi(2) * rxv;
         (c_m, f_m)
     }
 
@@ -217,10 +230,13 @@ impl Ball {
         // optional constant c_d
         let mut c_d = self.inputs.c_d;
         if c_d == 0. {
+            self.log_once("using variable c_d".into());
             c_d = self.get_cd(re);
+        } else {
+            self.log_once("using constant c_d".into());
         }
 
-        let f_d = -0.5 * c_d * self.inputs.rho * self.a * velocity.norm() * velocity;
+        let f_d = -0.5 * c_d * self.inputs.rho * self.a * velocity.length() * velocity;
         (c_d, f_d)
     }
 
@@ -269,7 +285,7 @@ pub fn simulation(
             return;
         }
 
-        let re = ball.reynolds(velocity.norm());
+        let re = ball.reynolds(velocity.length());
         let (c_d, f_d) = ball.drag(velocity, re);
         let (c_m, f_m) = ball.magnus(velocity, spin);
 
