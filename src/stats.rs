@@ -91,15 +91,6 @@ pub fn update(
                 }
             });
 
-            ui.horizontal(|ui| {
-                ui.label("Smash Factor [-]:");
-                let v0 = ball.inputs.club.speed;
-                let v1 = ball.velocity.get(0).copied().unwrap_or_default();
-                let sf = v1.norm() / v0;
-                let text = format!("{:.2}", sf);
-                ui.label(text);
-            });
-
             // TODO add shot guess/push pull hook
 
             ui.separator();

@@ -1,4 +1,3 @@
-use bevy::math::NormedVectorSpace;
 use bevy::prelude::*;
 
 use std::f32::consts::PI;
@@ -233,12 +232,16 @@ impl Ball {
 
 pub fn vx(vclub: f32, theta: f32, smash: f32) -> f32 {
     let theta_rad = theta.to_radians();
-    vclub * theta_rad.cos() * smash
+    let o = vclub * theta_rad.cos() * smash;
+    info!("vx {} - smash {} ({} @ {})", o, smash, vclub, theta);
+    o
 }
 
 pub fn vy(vclub: f32, theta: f32, smash: f32) -> f32 {
     let theta_rad = theta.to_radians();
-    vclub * theta_rad.sin() * smash
+    let o = vclub * theta_rad.sin() * smash;
+    info!("vy {} - smash {} ({} @ {})", o, smash, vclub, theta);
+    o
 }
 
 pub fn simulation(

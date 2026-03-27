@@ -41,9 +41,13 @@ impl Default for Inputs {
         let c_m = 0.;
 
         let club = bag::Club::default();
+
+        let vx = ball::vx(club.speed, club.loft, club.smash);
+        let vy = ball::vy(club.speed, club.loft, club.smash);
+
         let position = Vec3::ZERO;
-        let velocity = Vec3::new(70., 20., 0.);
-        let spin = Vec3::new(0., 0., 250.);
+        let velocity = Vec3::new(vx, vy, 0.);
+        let spin = Vec3::new(0., 0., club.spin);
         let _hand = shot::Hand::Left;
         let _shot = shot::Shot::Straight;
         let units = Units::Metric;
@@ -71,9 +75,8 @@ impl Inputs {
     pub fn update(&mut self) {
         // update velocity and spins
         info!("club change");
-        let vy = ball::vy(self.club.speed, self.club.loft, self.club.smash);
         self.velocity.x = ball::vx(self.club.speed, self.club.loft, self.club.smash);
-        self.velocity.y = vy;
+        self.velocity.y = ball::vy(self.club.speed, self.club.loft, self.club.smash);
         self.spin.z = self.club.spin;
     }
 }
