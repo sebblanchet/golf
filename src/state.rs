@@ -26,6 +26,8 @@ pub struct Inputs {
     pub decel: f32,
     pub mu: f32,
     pub units: Units,
+    pub c_d: f32,
+    pub c_m: f32,
 }
 
 impl Default for Inputs {
@@ -35,6 +37,8 @@ impl Default for Inputs {
         let rho = 1.225; // air density in kg/m^3
         let mu = 1.46e-5; // air viscosity at 25 in m^2/s
         let decel = 0.;
+        let c_d = 0.;
+        let c_m = 0.;
 
         let club = bag::Club::default();
         let position = Vec3::ZERO;
@@ -42,6 +46,7 @@ impl Default for Inputs {
         let spin = Vec3::new(0., 0., 250.);
         let _hand = shot::Hand::Left;
         let _shot = shot::Shot::Straight;
+        let units = Units::Metric;
 
         Self {
             m,
@@ -55,7 +60,9 @@ impl Default for Inputs {
             _shot,
             decel,
             mu,
-            units: Units::Metric,
+            units,
+            c_d,
+            c_m,
         }
     }
 }

@@ -167,7 +167,7 @@ impl Ball {
         // Clamp output value as it is only an approximation
         if re > 120000.0 {
             return 0.370;
-        } else if re < 53000.0 {
+        } else if re < 55000.0 {
             return 0.8;
         }
 
@@ -194,8 +194,16 @@ impl Ball {
         (-3.25 * s * s) + 1.99 * s
     }
 
-    pub fn lift(&self, velocity: Vec3, omega: Vec3) -> Vec3 {
-        let c_m = self.get_cm(omega.norm(), velocity.norm());
+    pub fn lift(&self, velocity: Vec3, omega: Vec3) -> (f32, Vec3) {
+        let mut c_m = self.inputs.c_m;
+
+        // optional calculate
+        if c_m == 0. {
+            c_m = self.get_cm(omega.norm(), velocity.norm());
+            if c_m == 0. {
+                return (0., Vec3::ZERO);
+            }
+        }
 
         // cross product of angular velocity and linear velocity, for direction of spin
         let oh = omega / omega.norm();
@@ -203,12 +211,17 @@ impl Ball {
         let rxv = oh.cross(vh);
 
         // magnitude of spin is considered in coefficient of lift
-        0.5 * self.inputs.rho * self.a * c_m * velocity.norm().powi(2) * rxv
+        let f_m = 0.5 * self.inputs.rho * self.a * c_m * velocity.norm().powi(2) * rxv;
+        (c_m, f_m)
     }
 
-    pub fn drag(&self, velocity: Vec3, re: f32) -> Vec3 {
-        let c_d = self.get_cd(re);
-        -0.5 * c_d * self.inputs.rho * self.a * velocity.norm() * velocity
+    pub fn drag(&self, velocity: Vec3, re: f32) -> (f32, Vec3) {
+        let mut c_d = self.inputs.c_d;
+        if c_d == 0. {
+            c_d = self.get_cd(re);
+        }
+        let f_d = -0.5 * c_d * self.inputs.rho * self.a * velocity.norm() * velocity;
+        (c_d, f_d)
     }
 
     pub fn gravity(&self) -> Vec3 {
@@ -252,11 +265,8 @@ pub fn simulation(
         }
 
         let re = ball.reynolds(velocity.norm());
-        let c_d = ball.get_cd(re);
-        let f_d = ball.drag(velocity, re);
-
-        let c_m = ball.get_cm(spin.norm(), velocity.norm());
-        let f_m = ball.lift(velocity, spin);
+        let (c_d, f_d) = ball.drag(velocity, re);
+        let (c_m, f_m) = ball.lift(velocity, spin);
 
         // gravitational force
         let f_g = ball.gravity();

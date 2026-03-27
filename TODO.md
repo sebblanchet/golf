@@ -1,5 +1,0 @@
-- vector mult for draw/fade
-- loading screen
-- optimize rust code (remove unwraps/clones)
-- controls
-- background colors

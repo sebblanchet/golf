@@ -16,7 +16,7 @@ pub fn update(mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>) {
         .show(ctx.get_mut(), |ui| {
             ui.heading("Version");
             ui.hyperlink_to(
-                format!("{GITHUB} github.com/sebblanchet/golf"),
+                format!("{GITHUB} sebblanchet/golf"),
                 "https://github.com/sebblanchet/golf",
             );
             ui.label("v0.1.0");

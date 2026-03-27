@@ -158,6 +158,14 @@ pub fn update(
                     ui.label("Decel Spin [%]");
                     ui.add(egui::Slider::new(&mut state.decel, 0. ..=20.));
                     ui.end_row();
+
+                    ui.label("Drag Coefficient [-]");
+                    ui.add(egui::Slider::new(&mut state.c_d, 0. ..=2.));
+                    ui.end_row();
+
+                    ui.label("Magnus Coefficient [-]");
+                    ui.add(egui::Slider::new(&mut state.c_m, 0. ..=2.));
+                    ui.end_row();
                 });
 
             egui::CollapsingHeader::new("Position")
