@@ -1,3 +1,4 @@
+use bevy::math::NormedVectorSpace;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use bevy_egui::{egui, EguiContext};
@@ -88,6 +89,15 @@ pub fn update(
                         ui.label(format!("{:.0}", spin_rs * RADS_TO_RPM));
                     }
                 }
+            });
+
+            ui.horizontal(|ui| {
+                ui.label("Smash Factor [-]:");
+                let v0 = ball.inputs.club.speed;
+                let v1 = ball.velocity.get(0).copied().unwrap_or_default();
+                let sf = v1.norm() / v0;
+                let text = format!("{:.2}", sf);
+                ui.label(text);
             });
 
             // TODO add shot guess/push pull hook

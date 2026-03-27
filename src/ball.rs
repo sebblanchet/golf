@@ -1,9 +1,9 @@
-use bevy::color::palettes::basic::BLUE;
 use bevy::math::NormedVectorSpace;
 use bevy::prelude::*;
 
 use std::f32::consts::PI;
 
+use crate::constants::{COLOUR_BALL_LINE, G_MS_2};
 use crate::csv;
 use crate::state;
 
@@ -194,10 +194,9 @@ impl Ball {
         (-3.25 * s * s) + 1.99 * s
     }
 
-    pub fn lift(&self, velocity: Vec3, omega: Vec3) -> (f32, Vec3) {
+    pub fn magnus(&self, velocity: Vec3, omega: Vec3) -> (f32, Vec3) {
+        // optional constant c_m
         let mut c_m = self.inputs.c_m;
-
-        // optional calculate
         if c_m == 0. {
             c_m = self.get_cm(omega.norm(), velocity.norm());
             if c_m == 0. {
@@ -216,16 +215,18 @@ impl Ball {
     }
 
     pub fn drag(&self, velocity: Vec3, re: f32) -> (f32, Vec3) {
+        // optional constant c_d
         let mut c_d = self.inputs.c_d;
         if c_d == 0. {
             c_d = self.get_cd(re);
         }
+
         let f_d = -0.5 * c_d * self.inputs.rho * self.a * velocity.norm() * velocity;
         (c_d, f_d)
     }
 
     pub fn gravity(&self) -> Vec3 {
-        let g = Vec3::new(0., -9.81, 0.);
+        let g = Vec3::new(0., -G_MS_2, 0.);
         self.inputs.m * g
     }
 }
@@ -258,7 +259,8 @@ pub fn simulation(
         let mut spin = ball.spin.last().copied().unwrap_or(Vec3::ZERO);
 
         // follow
-        gizmos.linestrip(ball.position.clone(), BLUE);
+        let color = Srgba::hex(COLOUR_BALL_LINE).unwrap();
+        gizmos.linestrip(ball.position.clone(), color);
 
         if velocity == Vec3::ZERO {
             return;
@@ -266,7 +268,7 @@ pub fn simulation(
 
         let re = ball.reynolds(velocity.norm());
         let (c_d, f_d) = ball.drag(velocity, re);
-        let (c_m, f_m) = ball.lift(velocity, spin);
+        let (c_m, f_m) = ball.magnus(velocity, spin);
 
         // gravitational force
         let f_g = ball.gravity();

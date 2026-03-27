@@ -1,10 +1,10 @@
+use crate::bag;
+use crate::ball;
+use crate::constants::{DEFAULT_M, DEFAULT_MU, DEFAULT_R, DEFAULT_RHO};
+use crate::shot;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use std::option::Option;
-
-use crate::bag;
-use crate::ball;
-use crate::shot;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Units {
@@ -32,10 +32,10 @@ pub struct Inputs {
 
 impl Default for Inputs {
     fn default() -> Self {
-        let m = 0.04593; // mass of the ball in kg
-        let r = 0.04267 / 2.; // radius of the ball in meters
-        let rho = 1.225; // air density in kg/m^3
-        let mu = 1.46e-5; // air viscosity at 25 in m^2/s
+        let m = DEFAULT_M;
+        let r = DEFAULT_R;
+        let rho = DEFAULT_RHO;
+        let mu = DEFAULT_MU;
         let decel = 0.;
         let c_d = 0.;
         let c_m = 0.;

@@ -1,8 +1,8 @@
-use bevy::color::palettes::basic::{GREEN, WHITE};
 use bevy::pbr::NotShadowCaster;
 use bevy::prelude::*;
 
 use crate::ball;
+use crate::constants::{COLOUR_BALL, COLOUR_GRASS, COLOUR_SKY};
 use crate::state;
 
 pub fn setup(
@@ -16,10 +16,14 @@ pub fn setup(
     let sphere = meshes.add(Sphere::new(0.1).mesh());
     let ball = ball::Ball::new(inputs.as_ref(), time.elapsed().as_secs_f32());
 
+    let colour_ball = Srgba::hex(COLOUR_BALL).unwrap();
     commands
         .spawn(PbrBundle {
             mesh: sphere,
-            material: materials.add(Color::from(WHITE)),
+            material: materials.add(StandardMaterial {
+                base_color: colour_ball.into(),
+                ..default()
+            }),
             ..default()
         })
         .insert(ball);
@@ -38,7 +42,7 @@ pub fn setup(
         PbrBundle {
             mesh: meshes.add(Cuboid::new(m, m, m)),
             material: materials.add(StandardMaterial {
-                base_color: Srgba::hex("888888").unwrap().into(),
+                base_color: Srgba::hex(COLOUR_SKY).unwrap().into(),
                 unlit: true,
                 cull_mode: None,
                 ..default()
@@ -50,6 +54,7 @@ pub fn setup(
     ));
 
     // ground plane
+    let colour_grass = Srgba::hex(COLOUR_GRASS).unwrap();
     commands.spawn(PbrBundle {
         mesh: meshes.add(
             Plane3d::default()
@@ -57,7 +62,10 @@ pub fn setup(
                 .size(4. * max, max)
                 .subdivisions(10),
         ),
-        material: materials.add(Color::from(GREEN)),
+        material: materials.add(StandardMaterial {
+            base_color: colour_grass.into(),
+            ..default()
+        }),
         ..default()
     });
 
