@@ -20,10 +20,14 @@ du -h "$dst/${name}_bg.wasm"
 wasm-opt -Oz "$dst/${name}_bg.wasm" -o "$dst/${name}_opt.wasm"
 du -h "$dst/${name}_opt.wasm"
 
+# overwrite
+mv "$dst/${name}_opt.wasm" "$dst/${name}_bg.wasm"
+
 # compress
-gzip -9 <"$dst/${name}_opt.wasm" >"$dst/${name}_zip.wasm"
-du -h "$dst/${name}_zip.wasm"
+# gzip -9 <"$dst/${name}_opt.wasm" >"$dst/${name}_zip.wasm"
+# du -h "$dst/${name}_zip.wasm"
 
 # copy index
 cp -rfv assets/index.html $out
+cp -rfv assets/favicon.ico $out
 ls -alR $out

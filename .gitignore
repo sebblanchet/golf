@@ -1,6 +1,7 @@
-*/target/
+**/target/*
 */.venv/
 **/wasm/**
+**/ref/**
 **/out/**
 !*/out/.gitkeep
 

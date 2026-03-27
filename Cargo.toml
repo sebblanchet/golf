@@ -19,6 +19,16 @@ plotters = "0.3.7"
 plotters-backend = "0.3.7"
 wasm-bindgen = "0.2.100"
 egui_dock = "0.14.0"
+js-sys = "0.3"
+web-sys = { version = "0.3", features = [
+  "Window",
+  "Document",
+  "HtmlElement",
+  "HtmlAnchorElement",
+  "Url",
+  "Blob",
+  "BlobPropertyBag"
+] }
 
 [profile.release]
 opt-level = 'z'

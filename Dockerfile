@@ -1,5 +1,5 @@
 # install deps
-FROM rust:1.84 AS base
+FROM rust:1.94 AS base
 RUN cargo install -f wasm-bindgen-cli --version 0.2.100
 RUN cargo install wasm-opt
 RUN rustup target add wasm32-unknown-unknown

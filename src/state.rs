@@ -1,10 +1,16 @@
+use crate::bag;
+use crate::ball;
+use crate::constants::{DEFAULT_M, DEFAULT_MU, DEFAULT_R, DEFAULT_RHO};
+use crate::shot;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use std::option::Option;
 
-use crate::bag;
-use crate::ball;
-use crate::shot;
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Units {
+    Metric,
+    Imperial,
+}
 
 #[derive(Debug, Resource, Clone)]
 pub struct Inputs {
@@ -15,26 +21,36 @@ pub struct Inputs {
     pub velocity: Vec3,
     pub spin: Vec3,
     pub club: bag::Club,
-    pub hand: shot::Hand,
-    pub shot: shot::Shot,
+    pub _hand: shot::Hand,
+    pub _shot: shot::Shot,
     pub decel: f32,
     pub mu: f32,
+    pub units: Units,
+    pub c_d: f32,
+    pub c_m: f32,
 }
 
 impl Default for Inputs {
     fn default() -> Self {
-        let m = 0.04593; // mass of the ball in kg
-        let r = 0.04267 / 2.; // radius of the ball in meters
-        let rho = 1.225; // air density in kg/m^3
-        let mu = 1.46e-5; // air viscosity at 25 in m^2/s
+        let m = DEFAULT_M;
+        let r = DEFAULT_R;
+        let rho = DEFAULT_RHO;
+        let mu = DEFAULT_MU;
         let decel = 0.;
+        let c_d = 0.;
+        let c_m = 0.;
 
         let club = bag::Club::default();
+
+        let vx = ball::vx(club.speed, club.loft, club.smash);
+        let vy = ball::vy(club.speed, club.loft, club.smash);
+
         let position = Vec3::ZERO;
-        let velocity = Vec3::new(70., 20., 0.);
-        let spin = Vec3::new(0., 0., 250.);
-        let hand = shot::Hand::Left;
-        let shot = shot::Shot::Straight;
+        let velocity = Vec3::new(vx, vy, 0.);
+        let spin = Vec3::new(0., 0., club.spin);
+        let _hand = shot::Hand::Left;
+        let _shot = shot::Shot::Straight;
+        let units = Units::Metric;
 
         Self {
             m,
@@ -44,10 +60,13 @@ impl Default for Inputs {
             position,
             velocity,
             spin,
-            hand,
-            shot,
+            _hand,
+            _shot,
             decel,
             mu,
+            units,
+            c_d,
+            c_m,
         }
     }
 }
@@ -56,23 +75,9 @@ impl Inputs {
     pub fn update(&mut self) {
         // update velocity and spins
         info!("club change");
-        self.velocity.x = ball::vx(self.club.speed, self.club.loft, self.club.weight, self.m);
-        self.velocity.y = ball::vy(
-            self.club.speed,
-            self.club.loft,
-            self.club.weight,
-            self.club.inertia,
-            self.m,
-            self.r,
-        );
-        self.spin.z = ball::spin(
-            self.club.speed,
-            self.club.loft,
-            self.club.weight,
-            self.club.inertia,
-            self.m,
-            self.r,
-        );
+        self.velocity.x = ball::vx(self.club.speed, self.club.loft, self.club.smash);
+        self.velocity.y = ball::vy(self.club.speed, self.club.loft, self.club.smash);
+        self.spin.z = self.club.spin;
     }
 }
 
@@ -118,3 +123,5 @@ pub fn teardown(
     // wipe ball
     outputs.ball = None;
 }
+
+// CSV export is now user-triggered from the UI (Stats panel)

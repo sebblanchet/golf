@@ -2312,9 +2312,11 @@ dependencies = [
  "csv",
  "egui_dock",
  "egui_plot",
+ "js-sys",
  "plotters",
  "plotters-backend",
  "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]
