@@ -15,3 +15,6 @@ pub const COLOUR_BALL_LINE: &str = "a51616";
 pub const COLOUR_SKY: &str = "66bdff";
 pub const COLOUR_GRASS: &str = "00be00";
 pub const COLOUR_BALL: &str = "ffffff";
+
+// spacings
+pub const UI_LABEL_SPACE: f32 = 6.0;

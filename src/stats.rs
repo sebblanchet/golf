@@ -1,13 +1,14 @@
+use crate::constants::*;
+use crate::state;
+use crate::ui;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use bevy_egui::{egui, EguiContext};
 
-use crate::constants::*;
-use crate::state;
-
 pub fn update(
     inputs: ResMut<state::Inputs>,
     outputs: ResMut<state::Outputs>,
+    mut ui_inputs: ResMut<ui::Ui>,
     mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>,
 ) {
     let Ok(mut ctx) = egui_ctx.get_single_mut() else {
@@ -20,6 +21,7 @@ pub fn update(
 
     egui::Window::new("Stats")
         .default_height(150.)
+        .open(&mut ui_inputs.open_stats)
         .show(ctx.get_mut(), |ui| {
             ui.horizontal(|ui| {
                 ui.label("Flight Time [s]:");

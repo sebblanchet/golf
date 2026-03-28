@@ -5,19 +5,22 @@ use bevy_egui::{egui, EguiContext};
 use crate::bag;
 use crate::constants::*;
 use crate::state;
+use crate::ui;
 
 pub fn update(
     bag: ResMut<bag::Bag>,
     mut state: ResMut<state::Inputs>,
+    ui_inputs: ResMut<ui::Ui>,
     mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>,
 ) {
     let Ok(mut ctx) = egui_ctx.get_single_mut() else {
         return;
     };
+
     egui::SidePanel::right("Inputs")
         .min_width(200.0)
         .resizable(false)
-        .show(ctx.get_mut(), |ui| {
+        .show_animated(ctx.get_mut(), ui_inputs.open_inputs, |ui| {
             // Units toggle
             egui::CollapsingHeader::new("Units")
                 .default_open(true)
@@ -316,6 +319,4 @@ pub fn update(
                     }
                 });
         });
-
-    //dbg!(state);
 }
