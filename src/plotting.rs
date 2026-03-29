@@ -7,9 +7,11 @@ use egui_plot::{Legend, Line, PlotPoints, PlotUi};
 
 use crate::constants::*;
 use crate::state;
+use crate::ui;
 
 pub fn update(
     inputs: Res<state::Inputs>,
+    ui: ResMut<ui::Ui>,
     outputs: ResMut<state::Outputs>,
     mut egui_ctx: Query<&mut EguiContext, With<PrimaryWindow>>,
 ) {
@@ -37,6 +39,7 @@ pub fn update(
     let z: Vec<f32> = ball.clone().position.into_iter().map(|p| p.z * k).collect();
     p.update_multi(
         ctx.get_mut(),
+        ui,
         format!("position vs x {}", label_unit),
         x,
         vec![
@@ -56,6 +59,7 @@ impl Plot {
     pub fn update_multi(
         &mut self,
         ctx: &egui::Context,
+        mut ui_inputs: ResMut<ui::Ui>,
         name: String,
         x: Vec<f32>,
         named_ys: Vec<(String, Vec<f32>)>,
@@ -68,6 +72,7 @@ impl Plot {
 
         egui::Window::new("Plots")
             .resizable(true)
+            .open(&mut ui_inputs.open_plots)
             .default_pos(Pos2::new(100., 400.))
             .default_width(400.)
             .default_height(250.)

@@ -2,6 +2,7 @@ use crate::bag;
 use crate::ball;
 use crate::constants::{DEFAULT_M, DEFAULT_MU, DEFAULT_R, DEFAULT_RHO};
 use crate::shot;
+use crate::ui;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use std::option::Option;
@@ -32,41 +33,27 @@ pub struct Inputs {
 
 impl Default for Inputs {
     fn default() -> Self {
-        let m = DEFAULT_M;
-        let r = DEFAULT_R;
-        let rho = DEFAULT_RHO;
-        let mu = DEFAULT_MU;
-        let decel = 0.;
-        let c_d = 0.;
-        let c_m = 0.;
-
         let club = bag::Club::default();
-
         let vx = ball::vx(club.speed, club.loft, club.smash);
         let vy = ball::vy(club.speed, club.loft, club.smash);
-
-        let position = Vec3::ZERO;
         let velocity = Vec3::new(vx, vy, 0.);
         let spin = Vec3::new(0., 0., club.spin);
-        let _hand = shot::Hand::Left;
-        let _shot = shot::Shot::Straight;
-        let units = Units::Metric;
 
         Self {
-            m,
-            r,
-            rho,
+            m: DEFAULT_M,
+            r: DEFAULT_R,
+            rho: DEFAULT_RHO,
             club,
-            position,
+            position: Vec3::ZERO,
             velocity,
             spin,
-            _hand,
-            _shot,
-            decel,
-            mu,
-            units,
-            c_d,
-            c_m,
+            _hand: shot::Hand::Right,
+            _shot: shot::Shot::Straight,
+            decel: 0.,
+            mu: DEFAULT_MU,
+            units: Units::Metric,
+            c_d: 0.,
+            c_m: 0.,
         }
     }
 }
@@ -104,10 +91,19 @@ pub fn trigger_restart(
     input: Res<ButtonInput<KeyCode>>,
     _state: Res<State<AppState>>,
     mut next_state: ResMut<NextState<AppState>>,
+    mut ui: ResMut<ui::Ui>,
 ) {
+    // spacebar
     if input.just_pressed(KeyCode::Space) {
-        info!("user triggered restart");
+        info!("user triggered restart with spacebar");
         next_state.set(AppState::Restarting);
+    }
+
+    // button
+    if ui.restart {
+        info!("user triggered restart with button");
+        next_state.set(AppState::Restarting);
+        ui.restart = false;
     }
 }
 

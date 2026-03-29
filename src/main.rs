@@ -6,11 +6,13 @@ mod constants;
 mod csv;
 mod inputs;
 mod logging;
+mod menu;
 mod plotting;
 mod plugins;
 mod shot;
 mod state;
 mod stats;
+mod ui;
 mod world;
 
 use bevy::input::common_conditions::input_toggle_active;
@@ -26,6 +28,7 @@ fn main() {
     app.init_resource::<state::Inputs>()
         .init_resource::<state::Outputs>()
         .init_resource::<bag::Bag>()
+        .init_resource::<ui::Ui>()
         .insert_resource(Time::<Fixed>::from_hz(100.));
 
     // plugins
@@ -55,13 +58,13 @@ fn main() {
     app.init_state::<state::AppState>();
 
     // systems
-    // TODO add pre Startup
     app.add_systems(Startup, (world::setup, camera::setup))
         .add_systems(PreUpdate, state::trigger_restart)
         .add_systems(
             Update,
             (
                 about::update,
+                menu::update,
                 inputs::update,
                 stats::update,
                 camera::pan,

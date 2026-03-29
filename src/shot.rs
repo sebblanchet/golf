@@ -3,8 +3,8 @@ use std::fmt;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Hand {
-    Left = 1,
-    _Right = -1,
+    _Left = 1,
+    Right = -1,
 }
 
 impl fmt::Display for Hand {
